@@ -1,0 +1,10 @@
+# Signing material — never commit
+vitality.jks
+*.jks
+*.keystore
+.ks-pass
+
+# Build artifacts
+.work/
+*.apk
+*.idsig

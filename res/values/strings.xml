@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vitality</string>
+    <string name="tagline">Three powers. One daily curve.</string>
+
+    <string name="greeting_morning">Good morning</string>
+    <string name="greeting_afternoon">Good afternoon</string>
+    <string name="greeting_evening">Good evening</string>
+    <string name="greeting_resting">Recharging</string>
+    <string name="live">LIVE</string>
+    <string name="today_power">TODAY\'S POWER</string>
+    <string name="draining_to_zero">DRAINING TO ZERO</string>
+    <string name="recharging_upper">RECHARGING</string>
+    <string name="next_reset">NEXT RESET</string>
+    <string name="power_bars">POWER BARS</string>
+    <string name="real_time">Real-time</string>
+    <string name="start">START</string>
+    <string name="zero">ZERO</string>
+    <string name="samples">SAMPLES</string>
+    <string name="home_tip">History builds automatically every 15 minutes. Everything stays on this device.</string>
+    <string name="dash">—</string>
+
+    <string name="willpower">Willpower</string>
+    <string name="wealth_power">Wealth Power</string>
+    <string name="energy_power">Energy Power</string>
+    <string name="willpower_sub">Mental drive &amp; focus</string>
+    <string name="wealth_power_sub">Financial momentum</string>
+    <string name="energy_power_sub">Physical reserves</string>
+    <string name="status_live">Live · draining</string>
+    <string name="status_resting">Resting</string>
+    <string name="status_live_short">Draining</string>
+    <string name="resets_at">5:00 AM</string>
+    <string name="zero_at">10:00 PM</string>
+    <string name="drain_left">%1$s left</string>
+    <string name="reset_in">in %1$s</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_history">History</string>
+    <string name="nav_themes">Themes</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="history_title">History</string>
+    <string name="history_sub">Your daily power, remembered</string>
+    <string name="seven_day_average">7-DAY AVERAGE</string>
+    <string name="days_tracked">%1$d days tracked</string>
+    <string name="recent_days">RECENT DAYS</string>
+    <string name="history_empty">No samples yet. Keep the app installed and history will build automatically.</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="row_samples">%1$d samples</string>
+    <string name="row_avg">Average %1$d%%</string>
+    <string name="row_last">Last %1$d%%</string>
+    <string name="row_avg_label">Average</string>
+    <string name="row_meta">%1$d samples · Last %2$d%%</string>
+    <string name="recent_range">Last 14 days</string>
+    <string name="detail_line">%1$s  %2$d%%</string>
+    <string name="detail_samples">%1$d samples saved</string>
+
+    <string name="themes_title">Themes</string>
+    <string name="themes_sub">Make it yours. Widgets follow too.</string>
+    <string name="selected">SELECTED</string>
+    <string name="theme_current">Current · %1$s</string>
+    <string name="change">Change</string>
+    <string name="theme_midnight">Midnight</string>
+    <string name="theme_aurora">Aurora</string>
+    <string name="theme_ocean">Ocean</string>
+    <string name="theme_sunset">Sunset</string>
+    <string name="theme_forest">Forest</string>
+    <string name="theme_rose">Rose</string>
+    <string name="theme_cyber">Cyber</string>
+    <string name="theme_linen">Linen</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_sub">Notifications, widgets &amp; data</string>
+    <string name="notifications">Notifications</string>
+    <string name="notifications_sub">Alerts when the bars pass a threshold</string>
+    <string name="alert_at">ALERT AT</string>
+    <string name="per_bar">ALERT PER BAR</string>
+    <string name="notif_note">Android runs background checks roughly every 15 minutes and may delay them in battery saver.</string>
+    <string name="permission_note">Notification permission is off. Turn it on to receive power alerts.</string>
+    <string name="widgets">Home screen widgets</string>
+    <string name="widgets_sub">Compact 2×2 · Wide 4×1 · Medium 4×2 · Large 4×4</string>
+    <string name="widgets_how">Long-press your home screen → Widgets → Vitality.</string>
+    <string name="refresh_widgets">Refresh widgets</string>
+    <string name="widgets_refreshed">Widgets refreshed</string>
+    <string name="data_title">History &amp; data</string>
+    <string name="data_info">%1$d days stored locally · schema v%2$d</string>
+    <string name="export_csv">Export CSV</string>
+    <string name="clear_history">Clear history</string>
+    <string name="clear_confirm_title">Clear all history?</string>
+    <string name="clear_confirm_msg">This permanently removes every saved daily sample from this device.</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
+    <string name="history_cleared">History cleared</string>
+    <string name="nothing_to_export">No history to export yet</string>
+    <string name="export_subject">Vitality history export</string>
+    <string name="about">About</string>
+    <string name="version_line">Version %1$s (%2$d)</string>
+    <string name="about_body">Willpower, Wealth Power and Energy Power drain in real time from 5:00 AM to 10:00 PM. Built offline-first and versioned for future updates.</string>
+    <string name="about_repo">Source code &amp; updates: github.com/nahid77777771-maker/vitality</string>
+    <string name="about_repo_url">https://github.com/nahid77777771-maker/vitality</string>
+    <string name="db_line">Local SQLite database · schema v%1$d</string>
+
+    <string name="channel_name">Power alerts</string>
+    <string name="channel_desc">Alerts when your daily bars fall past a chosen percentage</string>
+    <string name="notif_title_multi">Power at %1$d%%</string>
+    <string name="notif_title_bar">%1$s at %2$d%%</string>
+    <string name="notif_body_all">Willpower, Wealth Power and Energy Power just passed %1$d%%. Recharges at 5:00 AM.</string>
+    <string name="notif_body_one">%1$s just passed %2$d%%. Recharges at 5:00 AM.</string>
+    <string name="notif_body_multi">%1$s just passed %2$d%%. Recharges at 5:00 AM.</string>
+
+    <string name="widget_compact_name">Vitality · Compact</string>
+    <string name="widget_wide_name">Vitality · Wide</string>
+    <string name="widget_medium_name">Vitality · Medium</string>
+    <string name="widget_large_name">Vitality · Large</string>
+    <string name="widget_compact_desc">Three compact power bars</string>
+    <string name="widget_wide_desc">All three powers in a single strip</string>
+    <string name="widget_medium_desc">Power bars with labels and percentages</string>
+    <string name="widget_large_desc">Full dashboard with overall power and reset time</string>
+    <string name="widget_updated">Updated %1$s</string>
+    <string name="widget_recharge">Recharges %1$s</string>
+    <string name="widget_resets">Resets 5:00 AM</string>
+    <string name="widget_na">—</string>
+    <string name="overall">OVERALL</string>
+    <string name="power_bars_upper">POWER BARS</string>
+</resources>

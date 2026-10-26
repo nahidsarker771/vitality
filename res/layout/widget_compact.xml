@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="14dp"
+    android:background="@drawable/widget_bg_0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/wTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_name"
+            android:textColor="#FFF4F6FF"
+            android:textSize="10sp"
+            android:letterSpacing="0.16"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:id="@+id/wOverall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFF4F6FF"
+            android:textSize="15sp"
+            android:fontFamily="sans-serif-light" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/wWillLabel"
+            android:layout_width="62dp"
+            android:layout_height="wrap_content"
+            android:text="@string/willpower"
+            android:textColor="#FF8A93A8"
+            android:textSize="9sp" />
+
+        <ProgressBar
+            android:id="@+id/wWillBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="6dp"
+            android:layout_weight="1"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_bar_will" />
+
+        <TextView
+            android:id="@+id/wWillPct"
+            android:layout_width="34dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textColor="#FFF4F6FF"
+            android:textSize="9sp"
+            android:fontFamily="sans-serif-medium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/wWealthLabel"
+            android:layout_width="62dp"
+            android:layout_height="wrap_content"
+            android:text="@string/wealth_power"
+            android:textColor="#FF8A93A8"
+            android:textSize="9sp" />
+
+        <ProgressBar
+            android:id="@+id/wWealthBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="6dp"
+            android:layout_weight="1"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_bar_wealth" />
+
+        <TextView
+            android:id="@+id/wWealthPct"
+            android:layout_width="34dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textColor="#FFF4F6FF"
+            android:textSize="9sp"
+            android:fontFamily="sans-serif-medium" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/wEnergyLabel"
+            android:layout_width="62dp"
+            android:layout_height="wrap_content"
+            android:text="@string/energy_power"
+            android:textColor="#FF8A93A8"
+            android:textSize="9sp" />
+
+        <ProgressBar
+            android:id="@+id/wEnergyBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="6dp"
+            android:layout_weight="1"
+            android:max="100"
+            android:progressDrawable="@drawable/widget_bar_energy" />
+
+        <TextView
+            android:id="@+id/wEnergyPct"
+            android:layout_width="34dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textColor="#FFF4F6FF"
+            android:textSize="9sp"
+            android:fontFamily="sans-serif-medium" />
+    </LinearLayout>
+</LinearLayout>

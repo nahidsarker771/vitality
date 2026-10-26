@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vitality — Three powers. One daily curve.</title>
+<meta name="description" content="Vitality — native Android app with three real-time daily power bars: Willpower, Wealth Power and Energy Power. History, themes, widgets and threshold alerts. Fully offline.">
+<meta property="og:title" content="Vitality — Three powers. One daily curve.">
+<meta property="og:description" content="Three real-time daily power bars, history, 8 themes, 4 widgets and threshold alerts. Native Android, fully offline.">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --bg:#0a0e17; --panel:#121826; --panel-2:#0d1220; --line:#202a3d;
+    --text:#eef1f8; --muted:#8b96ad; --will:#8b7cff; --wealth:#38d39f; --energy:#ffb454;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:radial-gradient(1200px 600px at 15% -10%, #1a2240 0%, transparent 60%),
+               radial-gradient(900px 500px at 100% 0%, #10302b 0%, transparent 55%),
+               var(--bg);
+    color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,sans-serif;
+    min-height:100vh; line-height:1.55;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+  header{padding:26px 0;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.4px;font-size:18px}
+  .logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+    background:linear-gradient(145deg,#8b7cff,#5f4fd8);box-shadow:0 8px 24px #5f4fd855;font-size:19px}
+  nav a{color:var(--muted);text-decoration:none;margin-left:22px;font-size:14px}
+  nav a:hover{color:var(--text)}
+  .hero{padding:54px 0 30px;display:grid;grid-template-columns:1.1fr .9fr;gap:46px;align-items:center}
+  h1{font-size:clamp(34px,5vw,56px);line-height:1.06;letter-spacing:-1.2px;font-weight:800}
+  h1 span{background:linear-gradient(90deg,#8b7cff,#38d39f 60%,#ffb454);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .tagline{color:var(--muted);font-size:18px;margin-top:16px;max-width:460px}
+  .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:12px;
+    font-weight:650;font-size:15px;text-decoration:none;border:1px solid transparent;transition:.18s}
+  .btn-primary{background:var(--will);color:#0a0e17;box-shadow:0 10px 30px #8b7cff44}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 34px #8b7cff66}
+  .btn-ghost{border-color:var(--line);color:var(--text);background:#11182766}
+  .btn-ghost:hover{border-color:#3a4763;background:#151d2f}
+  .meta{margin-top:16px;color:var(--muted);font-size:12.5px}
+  .phone{background:var(--panel);border:1px solid var(--line);border-radius:28px;
+    padding:24px 22px;box-shadow:0 30px 70px #0008;position:relative;overflow:hidden}
+  .phone::before{content:"";position:absolute;inset:-40% 20% auto;height:220px;
+    background:radial-gradient(closest-side,#8b7cff33,transparent);pointer-events:none}
+  .p-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px;letter-spacing:1.4px}
+  .ring{width:104px;height:104px;border-radius:50%;margin:22px auto 8px;display:grid;place-items:center;
+    background:conic-gradient(var(--will) 0 62%, #1b2334 62% 100%);
+    -webkit-mask:radial-gradient(circle at center,transparent 56%,#000 57%);
+            mask:radial-gradient(circle at center,transparent 56%,#000 57%);}
+  .ring-label{text-align:center;font-size:12px;color:var(--muted);margin-bottom:22px}
+  .ring-label b{display:block;color:var(--text);font-size:20px;letter-spacing:-.4px}
+  .bar{margin-top:16px}
+  .bar-head{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:7px}
+  .bar-head span:last-child{color:var(--muted)}
+  .track{height:8px;border-radius:99px;background:#1b2334;overflow:hidden}
+  .fill{height:100%;border-radius:99px}
+  .fill.will{width:62%;background:linear-gradient(90deg,#8b7cff,#a99dff)}
+  .fill.wealth{width:44%;background:linear-gradient(90deg,#38d39f,#73e9c0)}
+  .fill.energy{width:71%;background:linear-gradient(90deg,#ffb454,#ffd089)}
+  section{padding:46px 0}
+  .kicker{color:var(--will);font-size:11px;letter-spacing:2.4px;font-weight:700}
+  h2{font-size:clamp(24px,3.4vw,36px);letter-spacing:-.7px;margin:8px 0 26px;font-weight:750}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{background:linear-gradient(180deg,#121826,#0f1522);border:1px solid var(--line);
+    border-radius:16px;padding:20px}
+  .card h3{font-size:15px;margin-bottom:6px;font-weight:650}
+  .card p{color:var(--muted);font-size:13px}
+  .ico{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;margin-bottom:13px;
+    background:#8b7cff1c;color:var(--will);font-size:16px}
+  .download{display:flex;align-items:center;justify-content:space-between;gap:24px;
+    background:linear-gradient(120deg,#141b2c,#101724);border:1px solid var(--line);
+    border-radius:20px;padding:30px 32px}
+  .download h2{margin:0 0 6px}
+  .download p{color:var(--muted);font-size:14px;max-width:520px}
+  footer{border-top:1px solid var(--line);margin-top:26px;padding:26px 0 40px;
+    display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:13px;flex-wrap:wrap}
+  footer a{color:var(--muted);text-decoration:none}
+  footer a:hover{color:var(--text)}
+  @media(max-width:820px){
+    .hero{grid-template-columns:1fr;gap:30px;padding-top:26px}
+    .grid{grid-template-columns:1fr 1fr}
+    .download{flex-direction:column;align-items:flex-start}
+    nav{display:none}
+  }
+  @media(max-width:520px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><div class="logo">V</div>Vitality</div>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#download">Download</a>
+      <a href="https://github.com/nahid77777771-maker/vitality">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <h1>Three powers.<br><span>One daily curve.</span></h1>
+        <p class="tagline">Willpower, Wealth Power and Energy Power drain in real time
+          from 05:00 to 22:00 — then recharge overnight. Fully offline.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="https://github.com/nahid77777771-maker/vitality/releases/latest/download/Vitality.apk">
+            Download APK
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/nahid77777771-maker/vitality">View source</a>
+        </div>
+        <p class="meta">Android 10+ · 80 KB · no internet permission · v1.1</p>
+      </div>
+
+      <div class="phone" aria-hidden="true">
+        <div class="p-top"><span>LIVE</span><span>17:42</span></div>
+        <div class="ring"></div>
+        <div class="ring-label"><b>62%</b>TODAY'S POWER</div>
+        <div class="bar">
+          <div class="bar-head"><span>Willpower</span><span>62%</span></div>
+          <div class="track"><div class="fill will"></div></div>
+        </div>
+        <div class="bar">
+          <div class="bar-head"><span>Wealth Power</span><span>44%</span></div>
+          <div class="track"><div class="fill wealth"></div></div>
+        </div>
+        <div class="bar">
+          <div class="bar-head"><span>Energy Power</span><span>71%</span></div>
+          <div class="track"><div class="fill energy"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="kicker">FEATURES</div>
+      <h2>Built for the whole day</h2>
+      <div class="grid">
+        <div class="card"><div class="ico">◔</div><h3>Real-time bars</h3>
+          <p>Seconds precision, 100% at 05:00 to 0% at 22:00, automatic overnight reset.</p></div>
+        <div class="card"><div class="ico">▤</div><h3>Four widgets</h3>
+          <p>2×2, 4×1, 4×2 and 4×4 home-screen widgets that follow your theme.</p></div>
+        <div class="card"><div class="ico">◈</div><h3>Eight themes</h3>
+          <p>Midnight to Linen, including a light palette. Applied instantly everywhere.</p></div>
+        <div class="card"><div class="ico">⌁</div><h3>History &amp; chart</h3>
+          <p>Local SQLite history with a 7-day average, 14-day chart and CSV export.</p></div>
+        <div class="card"><div class="ico">⚑</div><h3>Threshold alerts</h3>
+          <p>Choose 75 / 50 / 25 / 10% per power. One consolidated alert per crossing.</p></div>
+        <div class="card"><div class="ico">⛨</div><h3>Fully offline</h3>
+          <p>No account, no tracking, no INTERNET permission. Everything stays on device.</p></div>
+      </div>
+    </section>
+
+    <section id="download">
+      <div class="download">
+        <div>
+          <h2>Get Vitality</h2>
+          <p>Download the signed APK and install it on any Android 10+ phone.
+             Updates install over the previous version.</p>
+        </div>
+        <a class="btn btn-primary" href="https://github.com/nahid77777771-maker/vitality/releases/latest/download/Vitality.apk">Download APK</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 Nahid · Vitality</span>
+    <span>
+      <a href="https://github.com/nahid77777771-maker/vitality">GitHub</a> ·
+      <a href="https://github.com/nahid77777771-maker/vitality/releases">Releases</a> ·
+      <a href="https://github.com/nahid77777771-maker/vitality/issues">Issues</a>
+    </span>
+  </footer>
+</div>
+</body>
+</html>

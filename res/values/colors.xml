@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_default">#FF0A0E17</color>
+    <color name="nav_default">#FF0D1220</color>
+    <color name="icon_bg">#FF0A0E17</color>
+    <color name="accent_default">#FF8B7CFF</color>
+    <color name="widget_bg_0">#FF121826</color>
+    <color name="widget_bg_1">#FF0E1F28</color>
+    <color name="widget_bg_2">#FF0B2231</color>
+    <color name="widget_bg_3">#FF24141C</color>
+    <color name="widget_bg_4">#FF111F17</color>
+    <color name="widget_bg_5">#FF21141E</color>
+    <color name="widget_bg_6">#FF0D141D</color>
+    <color name="widget_bg_7">#FFFFFFFF</color>
+</resources>
