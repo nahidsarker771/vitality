@@ -1,8 +1,10 @@
 # Vitality
 
 Three daily power bars in real time — **Willpower**, **Wealth Power** and
-**Energy Power**. Each bar starts at 100% at 05:00 and drains to 0% at 22:00,
-then recharges overnight. Fully offline, native Android (Java), no WebView.
+**Energy Power**. Willpower and Wealth start at 100% at 05:00 and drain to 0%
+at 22:00, then reset overnight. Energy follows your real activity: steps and
+movement drain it, rest and sleep restore it. Fully offline, native Android
+(Java), no WebView.
 
 **Download:** [latest APK](https://github.com/nahid77777771-maker/vitality/releases/latest/download/Vitality.apk)
 · **Web:** [nahid77777771-maker.github.io/vitality](https://nahid77777771-maker.github.io/vitality/)
@@ -10,9 +12,12 @@ then recharges overnight. Fully offline, native Android (Java), no WebView.
 ## Features
 
 - Live countdown with seconds precision and an overall power ring
-- Three animated bars sharing the 05:00 → 22:00 daily curve
+- Track tab: step counter, distance (step + GPS), active minutes, last 7 days
+- Activity-aware Energy Power: step drain, active/light/rest modes, sleep recovery
+- Automatic sleep detection at night from stillness and screen state
+- Foreground tracking service with an ongoing status notification, resumes on boot
 - 8 themes (incl. a light theme); widgets follow the active theme
-- SQLite history: 7-day average, 14-day chart, per-day details, CSV export
+- SQLite history: 7-day average, 14-day chart, per-day details, CSV export with steps
 - Four home-screen widgets: 2×2, 4×1, 4×2 and 4×4
 - Threshold alerts at 75 / 50 / 25 / 10% with per-bar switches
 - Alarm-based background sampling and widget refresh, rescheduled on boot
@@ -53,8 +58,9 @@ apksigner. No Gradle.
 AndroidManifest.xml
 res/                  layouts, drawables, widgets, themes, strings
 src/com/nahid/vitality/
-  core/               time model, themes, preferences
-  data/               SQLite history
+  core/               time model, energy model, themes, preferences
+  data/               SQLite history + activity records
+  track/              sensors, sleep detection, foreground service
   notify/             alarms, notifications, widget refreshes
   ui/                 custom views
   widget/             four widget providers

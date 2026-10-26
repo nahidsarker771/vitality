@@ -9,11 +9,14 @@ import android.os.Looper;
 import android.widget.TextView;
 
 import com.nahid.vitality.core.AppPrefs;
+import com.nahid.vitality.core.EnergyModel;
 import com.nahid.vitality.core.PowerTime;
 import com.nahid.vitality.data.HistoryDb;
 import com.nahid.vitality.notify.AlarmScheduler;
 import com.nahid.vitality.notify.Notifier;
 import com.nahid.vitality.notify.WidgetRefresher;
+import com.nahid.vitality.track.Tracker;
+import com.nahid.vitality.track.TrackingService;
 import com.nahid.vitality.ui.PowerCardView;
 import com.nahid.vitality.ui.ScoreRingView;
 
@@ -75,11 +78,13 @@ public class MainActivity extends BaseActivity {
         updateNow();
         maybeAskNotificationPermission();
         WidgetRefresher.updateAll(this);
+        TrackingService.ensureRunning(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        TrackingService.ensureRunning(this);
         handler.removeCallbacks(ticker);
         handler.post(ticker);
     }
@@ -98,10 +103,15 @@ public class MainActivity extends BaseActivity {
         float percent = PowerTime.percent(now);
         int minute = now.getHour() * 60 + now.getMinute();
 
-        if (active && minute != lastSampleMinute) {
+        boolean newMinute = minute != lastSampleMinute;
+        if (newMinute) {
             lastSampleMinute = minute;
-            HistoryDb.sample(this, percent);
-            Notifier.check(this, percent);
+            Tracker.tick(this);
+        }
+        float energy = EnergyModel.current(this);
+        if (newMinute && active) {
+            HistoryDb.sample(this, percent, percent, energy);
+            Notifier.check(this, percent, percent, energy);
             updateSamples();
         }
         if (minute != lastWidgetMinute && minute % 5 == 0) {
@@ -114,7 +124,8 @@ public class MainActivity extends BaseActivity {
         LocalDateTime now = LocalDateTime.now();
         boolean active = PowerTime.isActive(now);
         float percent = PowerTime.percent(now);
-        int rounded = PowerTime.roundedPercent(percent);
+        float energy = EnergyModel.current(this);
+        int rounded = PowerTime.roundedPercent((percent * 2f + energy) / 3f);
 
         txtGreeting.setText(greeting(now.getHour()));
         txtDate.setText(PowerTime.fullDate(now.toLocalDate()));
@@ -122,10 +133,10 @@ public class MainActivity extends BaseActivity {
         txtOverall.setText(rounded + "%");
         txtLive.setText(active ? R.string.live : R.string.status_resting);
 
-        ring.setValue(percent);
+        ring.setValue((percent * 2f + energy) / 3f);
         cardWill.setPercent(percent);
         cardWealth.setPercent(percent);
-        cardEnergy.setPercent(percent);
+        cardEnergy.setPercent(energy);
 
         CharSequence status = getString(active ? R.string.status_live : R.string.status_resting);
         String timeLeft;
@@ -142,7 +153,32 @@ public class MainActivity extends BaseActivity {
         }
         cardWill.setStatus(status, timeLeft);
         cardWealth.setStatus(status, timeLeft);
-        cardEnergy.setStatus(status, timeLeft);
+        cardEnergy.setStatus(energyStatus(), energyDetail());
+    }
+
+    private CharSequence energyStatus() {
+        if (!AppPrefs.trackingEnabled(this)) {
+            return getString(R.string.energy_off);
+        }
+        String mode = EnergyModel.modeLabelKey(this);
+        if ("sleep".equals(mode)) {
+            return getString(R.string.energy_sleeping);
+        }
+        if ("active".equals(mode)) {
+            return getString(R.string.energy_active);
+        }
+        return getString(R.string.energy_resting);
+    }
+
+    private CharSequence energyDetail() {
+        HistoryDb.Activity activity = HistoryDb.get(this)
+                .activityForDay(PowerTime.powerDayKey());
+        if (activity == null) {
+            return getString(R.string.energy_off);
+        }
+        return getString(R.string.energy_steps,
+                java.text.NumberFormat.getIntegerInstance(java.util.Locale.US)
+                        .format(activity.steps));
     }
 
     private void updateSamples() {

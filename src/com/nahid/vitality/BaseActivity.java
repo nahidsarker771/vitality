@@ -15,10 +15,11 @@ import com.nahid.vitality.core.Themes;
 public abstract class BaseActivity extends Activity {
 
     private static final int[] NAV_IDS = {
-            R.id.navHome, R.id.navHistory, R.id.navThemes, R.id.navSettings
+            R.id.navHome, R.id.navTrack, R.id.navHistory, R.id.navThemes, R.id.navSettings
     };
     private static final Class<?>[] NAV_TARGETS = {
-            MainActivity.class, HistoryActivity.class, ThemesActivity.class, SettingsActivity.class
+            MainActivity.class, TrackActivity.class, HistoryActivity.class,
+            ThemesActivity.class, SettingsActivity.class
     };
 
     protected Theme theme;

@@ -43,7 +43,7 @@ public class HistoryActivity extends BaseActivity {
         list = findViewById(R.id.listHistory);
         chart = findViewById(R.id.chart);
 
-        applyChrome(1);
+        applyChrome(2);
         ((TextView) findViewById(R.id.txtRange)).setText(R.string.recent_range);
         list.setEmptyView(txtEmpty);
         load();

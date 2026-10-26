@@ -26,7 +26,7 @@ public class ThemesActivity extends BaseActivity {
         setContentView(R.layout.activity_themes);
 
         grid = findViewById(R.id.gridThemes);
-        applyChrome(2);
+        applyChrome(3);
 
         adapter = new ThemeAdapter();
         grid.setAdapter(adapter);

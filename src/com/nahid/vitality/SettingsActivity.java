@@ -60,7 +60,7 @@ public class SettingsActivity extends BaseActivity {
         txtRepo = findViewById(R.id.txtRepo);
         txtThemeCurrent = findViewById(R.id.txtThemeCurrent);
 
-        applyChrome(3);
+        applyChrome(4);
         wireTheme();
         wireNotifications();
         wireData();

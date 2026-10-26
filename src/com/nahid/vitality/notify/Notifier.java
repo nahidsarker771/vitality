@@ -54,17 +54,21 @@ public final class Notifier {
     }
 
     public static void check(Context context, float percent) {
-        if (percent <= 0f || percent >= 100f) {
-            return;
-        }
+        check(context, percent, percent, percent);
+    }
+
+    public static void check(Context context, float will, float wealth, float energy) {
         if (!AppPrefs.notificationsEnabled(context) || !canNotify(context)) {
             return;
         }
         String day = PowerTime.powerDayKey();
+        float[] percents = {will, wealth, energy};
         List<Integer> bars = new ArrayList<>();
         int best = 101;
+        int current = 100;
         for (int bar = AppPrefs.BAR_WILL; bar <= AppPrefs.BAR_ENERGY; bar++) {
-            if (!AppPrefs.barEnabled(context, bar)) {
+            float percent = percents[bar];
+            if (percent <= 0f || percent >= 100f || !AppPrefs.barEnabled(context, bar)) {
                 continue;
             }
             for (int threshold : AppPrefs.THRESHOLDS) {
@@ -79,16 +83,16 @@ public final class Notifier {
                     bars.add(bar);
                 }
                 best = Math.min(best, threshold);
+                current = Math.min(current, PowerTime.roundedPercent(percent));
             }
         }
         if (bars.isEmpty()) {
             return;
         }
-        post(context, bars, best);
+        post(context, bars, best, current);
     }
 
-    private static void post(Context context, List<Integer> bars, int threshold) {
-        int current = PowerTime.roundedPercent(PowerTime.nowPercent());
+    private static void post(Context context, List<Integer> bars, int threshold, int current) {
         List<String> names = new ArrayList<>();
         for (int bar : bars) {
             names.add(barName(context, bar));
@@ -100,7 +104,9 @@ public final class Notifier {
             body = context.getString(R.string.notif_body_all, threshold);
         } else if (bars.size() == 1) {
             title = context.getString(R.string.notif_title_bar, names.get(0), current);
-            body = context.getString(R.string.notif_body_one, names.get(0), threshold);
+            body = context.getString(bars.get(0) == AppPrefs.BAR_ENERGY
+                    ? R.string.notif_body_energy : R.string.notif_body_one,
+                    names.get(0), threshold);
         } else {
             title = context.getString(R.string.notif_title_multi, current);
             body = context.getString(R.string.notif_body_multi, join(names), threshold);

@@ -10,6 +10,7 @@ import android.widget.RemoteViews;
 import com.nahid.vitality.MainActivity;
 import com.nahid.vitality.R;
 import com.nahid.vitality.core.AppPrefs;
+import com.nahid.vitality.core.EnergyModel;
 import com.nahid.vitality.core.PowerTime;
 import com.nahid.vitality.core.Theme;
 import com.nahid.vitality.core.Themes;
@@ -22,16 +23,19 @@ public abstract class BaseVitalityWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Theme theme = Themes.get(AppPrefs.themeIndex(context));
         float percent = PowerTime.nowPercent();
-        RemoteViews views = build(context, theme, percent);
+        float energy = EnergyModel.current(context);
+        RemoteViews views = build(context, theme, percent, energy);
         for (int appWidgetId : appWidgetIds) {
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
 
-    private RemoteViews build(Context context, Theme theme, float percent) {
+    private RemoteViews build(Context context, Theme theme, float percent, float energy) {
         int layout = layoutRes();
         RemoteViews views = new RemoteViews(context.getPackageName(), layout);
-        String value = PowerTime.roundedPercent(percent) + "%";
+        String value = PowerTime.roundedPercent((percent * 2f + energy) / 3f) + "%";
+        String base = PowerTime.roundedPercent(percent) + "%";
+        String energyValue = PowerTime.roundedPercent(energy) + "%";
 
         views.setInt(R.id.widgetRoot, "setBackgroundResource", backgroundFor(theme.index));
         views.setTextColor(R.id.wTitle, theme.will);
@@ -44,12 +48,12 @@ public abstract class BaseVitalityWidget extends AppWidgetProvider {
         views.setTextColor(R.id.wEnergyPct, theme.text);
 
         views.setTextViewText(R.id.wOverall, value);
-        views.setTextViewText(R.id.wWillPct, value);
-        views.setTextViewText(R.id.wWealthPct, value);
-        views.setTextViewText(R.id.wEnergyPct, value);
+        views.setTextViewText(R.id.wWillPct, base);
+        views.setTextViewText(R.id.wWealthPct, base);
+        views.setTextViewText(R.id.wEnergyPct, energyValue);
         views.setProgressBar(R.id.wWillBar, 100, PowerTime.roundedPercent(percent), false);
         views.setProgressBar(R.id.wWealthBar, 100, PowerTime.roundedPercent(percent), false);
-        views.setProgressBar(R.id.wEnergyBar, 100, PowerTime.roundedPercent(percent), false);
+        views.setProgressBar(R.id.wEnergyBar, 100, PowerTime.roundedPercent(energy), false);
 
         if (layout == R.layout.widget_medium || layout == R.layout.widget_large) {
             views.setTextViewText(R.id.wTime,
