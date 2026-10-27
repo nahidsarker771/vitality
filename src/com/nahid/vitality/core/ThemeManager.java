@@ -41,7 +41,8 @@ public final class ThemeManager {
 
         View root = activity.findViewById(R.id.root);
         if (root != null) {
-            root.setBackgroundColor(theme.bg);
+            root.setBackground(gradient(theme.bg,
+                    blend(theme.bg, theme.surface, 0.65f)));
             applyTree(root, theme);
         }
     }
@@ -53,11 +54,20 @@ public final class ThemeManager {
 
         if (key != null) {
             if ("card".equals(key)) {
-                view.setBackground(rounded(context, theme.surface, theme.border, 20f));
+                view.setBackground(gradient(context,
+                        theme.surface,
+                        blend(theme.surface, theme.surfaceAlt, 0.55f),
+                        theme.border, 20f));
             } else if ("cardAlt".equals(key)) {
-                view.setBackground(rounded(context, theme.surfaceAlt, theme.border, 18f));
+                view.setBackground(gradient(context,
+                        theme.surfaceAlt,
+                        blend(theme.surfaceAlt, theme.surface, 0.45f),
+                        theme.border, 18f));
             } else if ("nav".equals(key)) {
-                view.setBackground(rounded(context, theme.navBg, theme.border, 22f));
+                view.setBackground(gradient(context,
+                        theme.navBg,
+                        blend(theme.navBg, theme.surfaceAlt, 0.35f),
+                        theme.border, 22f));
             } else if ("chip".equals(key)) {
                 view.setBackground(rounded(context, theme.surfaceAlt, theme.border, 99f));
             } else if ("chipAccent".equals(key)) {
@@ -112,6 +122,27 @@ public final class ThemeManager {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setShape(GradientDrawable.RECTANGLE);
         drawable.setColor(fillColor);
+        drawable.setCornerRadius(dp(context, radiusDp));
+        if (strokeColor != 0) {
+            drawable.setStroke(Math.max(1, (int) dp(context, 1f)), strokeColor);
+        }
+        return drawable;
+    }
+
+    public static GradientDrawable gradient(int topColor, int bottomColor) {
+        GradientDrawable drawable = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                new int[]{topColor, bottomColor});
+        drawable.setShape(GradientDrawable.RECTANGLE);
+        return drawable;
+    }
+
+    public static GradientDrawable gradient(Context context, int topColor, int bottomColor,
+                                            int strokeColor, float radiusDp) {
+        GradientDrawable drawable = new GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                new int[]{topColor, bottomColor});
+        drawable.setShape(GradientDrawable.RECTANGLE);
         drawable.setCornerRadius(dp(context, radiusDp));
         if (strokeColor != 0) {
             drawable.setStroke(Math.max(1, (int) dp(context, 1f)), strokeColor);

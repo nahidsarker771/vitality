@@ -11,13 +11,17 @@
     <string name="today_power">TODAY\'S POWER</string>
     <string name="draining_to_zero">DRAINING TO ZERO</string>
     <string name="recharging_upper">RECHARGING</string>
-    <string name="next_reset">NEXT RESET</string>
     <string name="power_bars">POWER BARS</string>
     <string name="real_time">Real-time</string>
-    <string name="start">START</string>
-    <string name="zero">ZERO</string>
-    <string name="samples">SAMPLES</string>
-    <string name="home_tip">History builds automatically every 15 minutes. Everything stays on this device.</string>
+    <string name="power_window_label">BAR WINDOW</string>
+    <string name="window_value">%1$s – %2$s</string>
+    <string name="power_schedule">Power schedule</string>
+    <string name="power_schedule_sub">Choose when bars start full and reach zero.</string>
+    <string name="schedule_start">START</string>
+    <string name="schedule_end">END</string>
+    <string name="schedule_note">Default 5:00 AM to 10:00 PM. An end earlier than start runs overnight.</string>
+    <string name="schedule_default">Reset to default</string>
+    <string name="schedule_invalid">Start and end times must be different.</string>
     <string name="dash">—</string>
 
     <string name="willpower">Willpower</string>
@@ -34,14 +38,11 @@
     <string name="status_live">Live · draining</string>
     <string name="status_resting">Resting</string>
     <string name="status_live_short">Draining</string>
-    <string name="resets_at">5:00 AM</string>
-    <string name="zero_at">10:00 PM</string>
     <string name="drain_left">%1$s left</string>
     <string name="reset_in">in %1$s</string>
 
     <string name="nav_home">Home</string>
     <string name="nav_history">History</string>
-    <string name="nav_themes">Themes</string>
     <string name="nav_settings">Settings</string>
 
     <string name="history_title">History</string>
@@ -62,7 +63,7 @@
     <string name="detail_samples">%1$d samples saved</string>
 
     <string name="themes_title">Themes</string>
-    <string name="themes_sub">Make it yours. Widgets follow too.</string>
+    <string name="themes_sub">Sixteen calm palettes. Pick what feels easy on your eyes.</string>
     <string name="selected">SELECTED</string>
     <string name="theme_current">Current · %1$s</string>
     <string name="change">Change</string>
@@ -74,6 +75,14 @@
     <string name="theme_rose">Rose</string>
     <string name="theme_cyber">Cyber</string>
     <string name="theme_linen">Linen</string>
+    <string name="theme_nord">Nord</string>
+    <string name="theme_solarized">Solarized Light</string>
+    <string name="theme_gruvbox">Gruvbox</string>
+    <string name="theme_rosepine">Rosé Pine</string>
+    <string name="theme_catppuccin">Catppuccin Mocha</string>
+    <string name="theme_tokyo">Tokyo Night</string>
+    <string name="theme_onedark">One Dark</string>
+    <string name="theme_kanagawa">Kanagawa</string>
 
     <string name="settings_title">Settings</string>
     <string name="settings_sub">Notifications, widgets &amp; data</string>
@@ -101,7 +110,7 @@
     <string name="export_subject">Vitality history export</string>
     <string name="about">About</string>
     <string name="version_line">Version %1$s (%2$d)</string>
-    <string name="about_body">Willpower and Wealth Power follow the 5:00 AM to 10:00 PM daily curve. Energy Power follows your steps, rest and sleep when tracking is on. Built offline-first and versioned for future updates.</string>
+    <string name="about_body">Willpower and Wealth Power follow your daily power schedule. Energy Power follows your steps, rest and sleep when tracking is on. Built offline-first and versioned for future updates.</string>
     <string name="about_repo">Source code &amp; updates: github.com/nahid77777771-maker/vitality</string>
     <string name="about_repo_url">https://github.com/nahid77777771-maker/vitality</string>
     <string name="db_line">Local SQLite database · schema v%1$d</string>
@@ -110,10 +119,10 @@
     <string name="channel_desc">Alerts when your daily bars fall past a chosen percentage</string>
     <string name="notif_title_multi">Power at %1$d%%</string>
     <string name="notif_title_bar">%1$s at %2$d%%</string>
-    <string name="notif_body_all">Willpower, Wealth Power and Energy Power just passed %1$d%%. Willpower and Wealth reset at 5:00 AM; Energy recovers with rest and sleep.</string>
-    <string name="notif_body_one">%1$s just passed %2$d%%. Recharges at 5:00 AM.</string>
+    <string name="notif_body_all">Willpower, Wealth Power and Energy Power just passed %1$d%%. Willpower and Wealth reset at the start of your power schedule; Energy recovers with rest and sleep.</string>
+    <string name="notif_body_one">%1$s just passed %2$d%%. Recharges when the next power window starts.</string>
     <string name="notif_body_energy">%1$s just passed %2$d%%. Rest and sleep restore it.</string>
-    <string name="notif_body_multi">%1$s just passed %2$d%%. Willpower and Wealth reset at 5:00 AM; Energy recovers with rest and sleep.</string>
+    <string name="notif_body_multi">%1$s just passed %2$d%%. Willpower and Wealth reset at the start of your power schedule; Energy recovers with rest and sleep.</string>
 
     <string name="widget_compact_name">Vitality · Compact</string>
     <string name="widget_wide_name">Vitality · Wide</string>
@@ -122,10 +131,10 @@
     <string name="widget_compact_desc">Three compact power bars</string>
     <string name="widget_wide_desc">All three powers in a single strip</string>
     <string name="widget_medium_desc">Power bars with labels and percentages</string>
-    <string name="widget_large_desc">Full dashboard with overall power and reset time</string>
+    <string name="widget_large_desc">Full dashboard with overall power and bar window</string>
     <string name="widget_updated">Updated %1$s</string>
     <string name="widget_recharge">Recharges %1$s</string>
-    <string name="widget_resets">Will &amp; Wealth reset 5:00 AM · Energy recovers with rest</string>
+    <string name="widget_resets">%1$s – %2$s · Energy recovers with rest</string>
     <string name="widget_na">—</string>
     <string name="overall">OVERALL</string>
     <string name="power_bars_upper">POWER BARS</string>
@@ -143,6 +152,14 @@
     <string name="track_energy_effect">Activity −%1$d%% · Rest +%2$d%% · Sleep +%3$d%%</string>
     <string name="track_energy_off">Enable tracking to make Energy Power follow your activity.</string>
     <string name="km_value">%1$.2f km</string>
+    <string name="track_activity_today">ACTIVITY TODAY</string>
+    <string name="track_activity_empty">Walk today to see when you were active.</string>
+    <string name="track_speed_title">WALKING SPEED</string>
+    <string name="track_speed_last10">LAST 10 MIN</string>
+    <string name="track_speed_top">TOP</string>
+    <string name="track_speed_low">LOW</string>
+    <string name="track_speed_value">%1$.1f km/h</string>
+    <string name="track_speed_note">Estimated from step cadence (0.762 m per step).</string>
     <string name="track_sleep">Sleep last night</string>
     <string name="track_rest">Rest today</string>
     <string name="track_motion">Motion state</string>
@@ -153,22 +170,26 @@
     <string name="track_motion_rest">Resting</string>
     <string name="track_permission_title">Activity access</string>
     <string name="track_permission_body">Allow Physical activity access so Vitality can count steps and detect sleep. Data stays on this device.</string>
-    <string name="track_permission_sensor">No hardware step sensor found — GPS and motion will be used.</string>
+    <string name="track_permission_sensor">No hardware step sensor found — motion will be used.</string>
     <string name="track_allow">Allow access</string>
     <string name="track_permission_denied">Activity access is required to count steps.</string>
+    <string name="track_enable_title">Tracking is off</string>
+    <string name="track_enable_body">Turn it on to count steps, distance and sleep. Everything stays on this device.</string>
+    <string name="track_enable">Turn on tracking</string>
+    <string name="track_settings_title">Activity tracking</string>
+    <string name="track_settings_sub">Steps, sleep and background reliability.</string>
+    <string name="track_permission_needed">Activity permission needed</string>
     <string name="track_background">Background tracking</string>
     <string name="track_background_sub">Low-priority notification keeps tracking alive, like a messenger app.</string>
-    <string name="track_service_on">Service running · updated %1$s</string>
+    <string name="track_service_on">Service running</string>
     <string name="track_service_paused">Service paused — open Vitality to resume</string>
     <string name="track_service_off">Tracking is off</string>
-    <string name="track_gps">GPS distance</string>
-    <string name="track_gps_sub">Adds real outdoor distance. Uses more battery.</string>
-    <string name="track_battery">Keep alive</string>
+    <string name="track_battery">Battery optimization</string>
     <string name="track_battery_ok">Battery unrestricted · best reliability</string>
     <string name="track_battery_opt">Battery optimized · Android may pause sensors</string>
     <string name="track_battery_btn">Battery settings</string>
     <string name="track_battery_na">Battery settings unavailable</string>
-    <string name="track_notifications">Notification status</string>
+    <string name="track_notifications">Tracking notification</string>
     <string name="track_notifications_ok">Notifications on · tracking status is visible</string>
     <string name="track_notifications_off">Notifications off · allow them to see tracking status</string>
     <string name="track_notifications_btn">Notification settings</string>
@@ -184,5 +205,4 @@
     <string name="track_steps_value">%1$s steps</string>
     <string name="track_active_value">%1$d min</string>
     <string name="track_sleep_value">%1$s</string>
-    <string name="track_location_off">GPS distance is off (no location permission).</string>
 </resources>

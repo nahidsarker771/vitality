@@ -39,6 +39,12 @@ public class ThemesActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        open(SettingsActivity.class);
+        finish();
+    }
+
     private final class ThemeAdapter extends BaseAdapter {
 
         private final LayoutInflater inflater = LayoutInflater.from(ThemesActivity.this);
@@ -66,8 +72,10 @@ public class ThemesActivity extends BaseActivity {
             Theme item = getItem(position);
             boolean selected = AppPrefs.themeIndex(ThemesActivity.this) == position;
 
-            convertView.setBackground(ThemeManager.rounded(ThemesActivity.this,
-                    item.bg, selected ? item.will : item.border, 18f));
+            convertView.setBackground(ThemeManager.gradient(ThemesActivity.this,
+                    item.bg,
+                    ThemeManager.blend(item.bg, item.surface, 0.65f),
+                    selected ? item.will : item.border, 18f));
 
             TextView name = convertView.findViewById(R.id.txtThemeName);
             name.setText(item.nameRes);

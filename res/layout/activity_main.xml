@@ -11,16 +11,17 @@
         android:layout_weight="1"
         android:fillViewport="true"
         android:clipToPadding="false"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:overScrollMode="never">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="22dp"
-            android:paddingBottom="16dp">
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -38,7 +39,7 @@
                         android:id="@+id/txtGreeting"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="24sp"
+                        android:textSize="20sp"
                         android:fontFamily="sans-serif-light"
                         android:tag="primary" />
 
@@ -46,8 +47,8 @@
                         android:id="@+id/txtDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:textSize="12sp"
+                        android:layout_marginTop="2dp"
+                        android:textSize="10sp"
                         android:tag="muted" />
                 </LinearLayout>
 
@@ -62,20 +63,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/live"
-                        android:textSize="10sp"
-                        android:letterSpacing="0.18"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:paddingTop="6dp"
-                        android:paddingBottom="6dp"
+                        android:textSize="9sp"
+                        android:letterSpacing="0.16"
+                        android:paddingStart="11dp"
+                        android:paddingEnd="11dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
                         android:tag="chipAccent" />
 
                     <TextView
                         android:id="@+id/txtClock"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:textSize="11sp"
+                        android:layout_marginTop="5dp"
+                        android:textSize="10sp"
                         android:tag="muted" />
                 </LinearLayout>
             </LinearLayout>
@@ -83,19 +84,20 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="vertical"
-                android:padding="20dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp"
                 android:tag="card">
 
                 <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="198dp">
+                    android:layout_width="116dp"
+                    android:layout_height="116dp">
 
                     <com.nahid.vitality.ui.ScoreRingView
                         android:id="@+id/ring"
-                        android:layout_width="198dp"
-                        android:layout_height="198dp"
+                        android:layout_width="116dp"
+                        android:layout_height="116dp"
                         android:layout_gravity="center" />
 
                     <LinearLayout
@@ -109,90 +111,70 @@
                             android:id="@+id/txtOverall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="46sp"
+                            android:textSize="30sp"
                             android:fontFamily="sans-serif-light"
                             android:tag="primary" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
+                            android:layout_marginTop="1dp"
                             android:text="@string/today_power"
-                            android:textSize="9sp"
-                            android:letterSpacing="0.2"
+                            android:textSize="7sp"
+                            android:letterSpacing="0.12"
                             android:tag="muted" />
                     </LinearLayout>
                 </FrameLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="16dp"
-                    android:tag="divider" />
-
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    android:layout_marginStart="14dp"
+                    android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:text="@string/power_window_label"
+                        android:textSize="9sp"
+                        android:letterSpacing="0.14"
+                        android:tag="muted" />
 
-                        <TextView
-                            android:id="@+id/txtCountdownLabel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/draining_to_zero"
-                            android:textSize="9sp"
-                            android:letterSpacing="0.15"
-                            android:tag="muted" />
-
-                        <TextView
-                            android:id="@+id/txtCountdown"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:textSize="14sp"
-                            android:fontFamily="sans-serif-medium"
-                            android:tag="primary" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <TextView
+                        android:id="@+id/txtWindow"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="end">
+                        android:layout_marginTop="3dp"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:tag="primary" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/next_reset"
-                            android:textSize="9sp"
-                            android:letterSpacing="0.15"
-                            android:tag="muted" />
+                    <TextView
+                        android:id="@+id/txtCountdownLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/draining_to_zero"
+                        android:textSize="9sp"
+                        android:letterSpacing="0.12"
+                        android:tag="muted" />
 
-                        <TextView
-                            android:id="@+id/txtResetAt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="@string/resets_at"
-                            android:textSize="14sp"
-                            android:fontFamily="sans-serif-medium"
-                            android:tag="primary" />
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtCountdown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:textSize="13sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:tag="primary" />
                 </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
@@ -201,7 +183,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/power_bars"
-                    android:textSize="10sp"
+                    android:textSize="9sp"
                     android:letterSpacing="0.18"
                     android:tag="muted" />
 
@@ -217,124 +199,19 @@
                 android:id="@+id/cardWill"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp" />
+                android:layout_marginTop="6dp" />
 
             <com.nahid.vitality.ui.PowerCardView
                 android:id="@+id/cardWealth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="6dp" />
 
             <com.nahid.vitality.ui.PowerCardView
                 android:id="@+id/cardEnergy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="16dp"
-                android:tag="cardAlt">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/start"
-                        android:textSize="9sp"
-                        android:letterSpacing="0.15"
-                        android:tag="muted" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:text="@string/resets_at"
-                        android:textSize="13sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:tag="primary" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="30dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="14dp"
-                    android:tag="divider" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/zero"
-                        android:textSize="9sp"
-                        android:letterSpacing="0.15"
-                        android:tag="muted" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:text="@string/zero_at"
-                        android:textSize="13sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:tag="primary" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="30dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="14dp"
-                    android:tag="divider" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/samples"
-                        android:textSize="9sp"
-                        android:letterSpacing="0.15"
-                        android:tag="muted" />
-
-                    <TextView
-                        android:id="@+id/txtSamples"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:textSize="13sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:tag="primary" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/home_tip"
-                android:textSize="11sp"
-                android:lineSpacingExtra="3dp"
-                android:tag="muted" />
+                android:layout_marginTop="6dp" />
         </LinearLayout>
     </ScrollView>
 

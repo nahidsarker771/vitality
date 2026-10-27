@@ -1,5 +1,7 @@
 package com.nahid.vitality.core;
 
+import android.content.Context;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,19 +12,73 @@ import java.util.Locale;
 
 public final class PowerTime {
 
-    public static final int START_HOUR = 5;
-    public static final int END_HOUR = 22;
-    private static final int START_SECONDS = START_HOUR * 3600;
-    private static final int END_SECONDS = END_HOUR * 3600;
-    private static final int SPAN_SECONDS = END_SECONDS - START_SECONDS;
-    private static final int DAY_SECONDS = 24 * 3600;
+    public static final int DEFAULT_START_MINUTE = 5 * 60;
+    public static final int DEFAULT_END_MINUTE = 22 * 60;
+    public static final int DAY_MINUTES = 24 * 60;
 
     private static final DateTimeFormatter CLOCK = DateTimeFormatter.ofPattern("h:mm a", Locale.US);
     private static final DateTimeFormatter CLOCK_SECONDS = DateTimeFormatter.ofPattern("h:mm:ss a", Locale.US);
     private static final DateTimeFormatter FULL_DATE = DateTimeFormatter.ofPattern("EEEE, MMMM d", Locale.US);
     private static final DateTimeFormatter SHORT_DATE = DateTimeFormatter.ofPattern("EEE, MMM d", Locale.US);
 
+    private static int startMinute = DEFAULT_START_MINUTE;
+    private static int endMinute = DEFAULT_END_MINUTE;
+
     private PowerTime() {
+    }
+
+    public static void configure(Context context) {
+        applyWindow(AppPrefs.powerStartMinute(context), AppPrefs.powerEndMinute(context));
+    }
+
+    public static void applyWindow(int start, int end) {
+        startMinute = Math.floorMod(start, DAY_MINUTES);
+        endMinute = Math.floorMod(end, DAY_MINUTES);
+        if (startMinute == endMinute) {
+            startMinute = DEFAULT_START_MINUTE;
+            endMinute = DEFAULT_END_MINUTE;
+        }
+    }
+
+    public static int startMinute() {
+        return startMinute;
+    }
+
+    public static int endMinute() {
+        return endMinute;
+    }
+
+    public static boolean isCustomWindow() {
+        return startMinute != DEFAULT_START_MINUTE || endMinute != DEFAULT_END_MINUTE;
+    }
+
+    public static String startClock() {
+        return clockOfMinute(startMinute);
+    }
+
+    public static String endClock() {
+        return clockOfMinute(endMinute);
+    }
+
+    public static String clockOfMinute(int minute) {
+        int normalized = Math.floorMod(minute, DAY_MINUTES);
+        return CLOCK.format(LocalTime.of(normalized / 60, normalized % 60));
+    }
+
+    private static int startSeconds() {
+        return startMinute * 60;
+    }
+
+    private static int endSeconds() {
+        return endMinute * 60;
+    }
+
+    private static int activeSpanSeconds() {
+        int span = endSeconds() - startSeconds();
+        if (span <= 0) {
+            span += 24 * 3600;
+        }
+        return span;
     }
 
     public static int secondsOfDay(LocalDateTime time) {
@@ -30,17 +86,30 @@ public final class PowerTime {
         return t.getHour() * 3600 + t.getMinute() * 60 + t.getSecond();
     }
 
+    private static boolean isActiveSeconds(int s) {
+        int start = startSeconds();
+        int end = endSeconds();
+        if (start < end) {
+            return s >= start && s < end;
+        }
+        return s >= start || s < end;
+    }
+
     public static boolean isActive(LocalDateTime time) {
-        int s = secondsOfDay(time);
-        return s >= START_SECONDS && s < END_SECONDS;
+        return isActiveSeconds(secondsOfDay(time));
     }
 
     public static float percent(LocalDateTime time) {
         int s = secondsOfDay(time);
-        if (s < START_SECONDS || s >= END_SECONDS) {
+        if (!isActiveSeconds(s)) {
             return 0f;
         }
-        return (END_SECONDS - s) * 100f / SPAN_SECONDS;
+        int elapsed = s - startSeconds();
+        if (elapsed < 0) {
+            elapsed += 24 * 3600;
+        }
+        int span = activeSpanSeconds();
+        return (span - elapsed) * 100f / span;
     }
 
     public static float nowPercent() {
@@ -49,20 +118,18 @@ public final class PowerTime {
 
     public static long minutesUntilZero() {
         int s = secondsOfDay(LocalDateTime.now());
-        if (s < START_SECONDS || s >= END_SECONDS) {
+        if (!isActiveSeconds(s)) {
             return 0;
         }
-        return ((END_SECONDS - s) + 59) / 60;
+        int end = endSeconds();
+        int until = end > s ? end - s : 24 * 3600 - s + end;
+        return (until + 59) / 60;
     }
 
     public static long minutesUntilStart() {
         int s = secondsOfDay(LocalDateTime.now());
-        int target;
-        if (s < START_SECONDS) {
-            target = START_SECONDS;
-        } else {
-            target = DAY_SECONDS + START_SECONDS;
-        }
+        int start = startSeconds();
+        int target = s < start ? start : 24 * 3600 + start;
         return ((target - s) + 59) / 60;
     }
 
@@ -106,7 +173,8 @@ public final class PowerTime {
 
     public static LocalDate powerDay() {
         LocalTime now = LocalTime.now();
-        if (now.isBefore(LocalTime.of(START_HOUR, 0))) {
+        LocalTime start = LocalTime.of(startMinute / 60, startMinute % 60);
+        if (now.isBefore(start)) {
             return LocalDate.now().minusDays(1);
         }
         return LocalDate.now();

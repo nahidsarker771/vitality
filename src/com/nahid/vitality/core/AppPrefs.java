@@ -14,6 +14,8 @@ public final class AppPrefs {
     private static final String K_THEME = "theme";
     private static final String K_NOTIF = "notif_enabled";
     private static final String K_NOTIF_ASKED = "notif_asked";
+    private static final String K_POWER_START = "power_start_minute";
+    private static final String K_POWER_END = "power_end_minute";
 
     private AppPrefs() {
     }
@@ -28,6 +30,21 @@ public final class AppPrefs {
 
     public static void setThemeIndex(Context context, int index) {
         sp(context).edit().putInt(K_THEME, index).apply();
+    }
+
+    public static int powerStartMinute(Context context) {
+        return sp(context).getInt(K_POWER_START, PowerTime.DEFAULT_START_MINUTE);
+    }
+
+    public static int powerEndMinute(Context context) {
+        return sp(context).getInt(K_POWER_END, PowerTime.DEFAULT_END_MINUTE);
+    }
+
+    public static void setPowerWindow(Context context, int startMinute, int endMinute) {
+        sp(context).edit()
+                .putInt(K_POWER_START, startMinute)
+                .putInt(K_POWER_END, endMinute)
+                .apply();
     }
 
     public static boolean notificationsEnabled(Context context) {
@@ -84,14 +101,6 @@ public final class AppPrefs {
 
     public static void setTrackingAsked(Context context, boolean asked) {
         sp(context).edit().putBoolean("track_asked", asked).apply();
-    }
-
-    public static boolean gpsEnabled(Context context) {
-        return sp(context).getBoolean("track_gps", true);
-    }
-
-    public static void setGpsEnabled(Context context, boolean enabled) {
-        sp(context).edit().putBoolean("track_gps", enabled).apply();
     }
 
     public static long lastStepAt(Context context) {

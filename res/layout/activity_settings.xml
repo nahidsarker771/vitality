@@ -98,6 +98,258 @@
                 android:padding="18dp"
                 android:tag="card">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/power_schedule"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:tag="primary" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:text="@string/power_schedule_sub"
+                    android:textSize="11sp"
+                    android:tag="muted" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/rowScheduleStart"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:tag="cardAlt">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/schedule_start"
+                            android:textSize="9sp"
+                            android:letterSpacing="0.14"
+                            android:tag="muted" />
+
+                        <TextView
+                            android:id="@+id/txtScheduleStart"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:textSize="16sp"
+                            android:fontFamily="sans-serif-medium"
+                            android:tag="primary" />
+                    </LinearLayout>
+
+                    <Space
+                        android:layout_width="10dp"
+                        android:layout_height="1dp" />
+
+                    <LinearLayout
+                        android:id="@+id/rowScheduleEnd"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:padding="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:tag="cardAlt">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/schedule_end"
+                            android:textSize="9sp"
+                            android:letterSpacing="0.14"
+                            android:tag="muted" />
+
+                        <TextView
+                            android:id="@+id/txtScheduleEnd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:textSize="16sp"
+                            android:fontFamily="sans-serif-medium"
+                            android:tag="primary" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:text="@string/schedule_note"
+                    android:textSize="10sp"
+                    android:lineSpacingExtra="2dp"
+                    android:tag="muted" />
+
+                <TextView
+                    android:id="@+id/btnScheduleReset"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:paddingTop="11dp"
+                    android:paddingBottom="11dp"
+                    android:text="@string/schedule_default"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:tag="btnAlt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="vertical"
+                android:padding="18dp"
+                android:tag="card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/track_settings_title"
+                            android:textSize="16sp"
+                            android:fontFamily="sans-serif-medium"
+                            android:tag="primary" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="@string/track_settings_sub"
+                            android:textSize="11sp"
+                            android:tag="muted" />
+                    </LinearLayout>
+
+                    <Switch
+                        android:id="@+id/swTracking"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtServiceStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/track_service_off"
+                    android:textSize="11sp"
+                    android:tag="accent" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginBottom="14dp"
+                    android:tag="divider" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/track_battery"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:tag="primary" />
+
+                <TextView
+                    android:id="@+id/txtBatteryStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textSize="11sp"
+                    android:tag="muted" />
+
+                <TextView
+                    android:id="@+id/btnBattery"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:paddingTop="11dp"
+                    android:paddingBottom="11dp"
+                    android:text="@string/track_battery_btn"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:tag="btnAlt" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="14dp"
+                    android:layout_marginBottom="14dp"
+                    android:tag="divider" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/track_notifications"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:tag="primary" />
+
+                <TextView
+                    android:id="@+id/txtNotificationStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textSize="11sp"
+                    android:tag="muted" />
+
+                <TextView
+                    android:id="@+id/btnNotifications"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:paddingTop="11dp"
+                    android:paddingBottom="11dp"
+                    android:text="@string/track_notifications_btn"
+                    android:textSize="12sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:tag="btnAlt" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/track_note"
+                    android:textSize="10sp"
+                    android:lineSpacingExtra="2dp"
+                    android:tag="muted" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="vertical"
+                android:padding="18dp"
+                android:tag="card">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

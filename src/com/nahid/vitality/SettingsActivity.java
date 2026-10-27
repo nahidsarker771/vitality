@@ -2,6 +2,7 @@ package com.nahid.vitality;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -9,30 +10,43 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.format.DateFormat;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nahid.vitality.core.AppPrefs;
+import com.nahid.vitality.core.PowerTime;
 import com.nahid.vitality.core.ThemeManager;
 import com.nahid.vitality.core.Themes;
 import com.nahid.vitality.data.HistoryDb;
 import com.nahid.vitality.notify.Notifier;
 import com.nahid.vitality.notify.WidgetRefresher;
+import com.nahid.vitality.track.TrackingControl;
+import com.nahid.vitality.track.TrackingService;
+
+import java.util.List;
 
 public class SettingsActivity extends BaseActivity {
 
     private static final int REQ_NOTIFICATIONS = 12;
+    private static final int REQ_TRACKING = 13;
 
     private Switch swNotif;
     private Switch swWill;
     private Switch swWealth;
     private Switch swEnergy;
+    private Switch swTracking;
     private TextView chip75;
     private TextView chip50;
     private TextView chip25;
     private TextView chip10;
     private TextView txtNotifPerm;
+    private TextView txtScheduleStart;
+    private TextView txtScheduleEnd;
+    private TextView txtServiceStatus;
+    private TextView txtBatteryStatus;
+    private TextView txtNotificationStatus;
     private TextView txtDataInfo;
     private TextView txtVersion;
     private TextView txtDbInfo;
@@ -49,23 +63,39 @@ public class SettingsActivity extends BaseActivity {
         swWill = findViewById(R.id.swWill);
         swWealth = findViewById(R.id.swWealth);
         swEnergy = findViewById(R.id.swEnergy);
+        swTracking = findViewById(R.id.swTracking);
         chip75 = findViewById(R.id.chip75);
         chip50 = findViewById(R.id.chip50);
         chip25 = findViewById(R.id.chip25);
         chip10 = findViewById(R.id.chip10);
         txtNotifPerm = findViewById(R.id.txtNotifPerm);
+        txtScheduleStart = findViewById(R.id.txtScheduleStart);
+        txtScheduleEnd = findViewById(R.id.txtScheduleEnd);
+        txtServiceStatus = findViewById(R.id.txtServiceStatus);
+        txtBatteryStatus = findViewById(R.id.txtBatteryStatus);
+        txtNotificationStatus = findViewById(R.id.txtNotificationStatus);
         txtDataInfo = findViewById(R.id.txtDataInfo);
         txtVersion = findViewById(R.id.txtVersion);
         txtDbInfo = findViewById(R.id.txtDbInfo);
         txtRepo = findViewById(R.id.txtRepo);
         txtThemeCurrent = findViewById(R.id.txtThemeCurrent);
 
-        applyChrome(4);
+        applyChrome(3);
         wireTheme();
+        wireSchedule();
+        wireTracking();
         wireNotifications();
         wireData();
         wireRepo();
         updateUi();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (swTracking != null) {
+            updateUi();
+        }
     }
 
     private void wireTheme() {
@@ -74,6 +104,80 @@ public class SettingsActivity extends BaseActivity {
         change.setOnClickListener(view -> open(ThemesActivity.class));
         txtThemeCurrent.setText(getString(R.string.theme_current,
                 getString(Themes.get(AppPrefs.themeIndex(this)).nameRes)));
+    }
+
+    private void wireSchedule() {
+        findViewById(R.id.rowScheduleStart).setOnClickListener(view -> pickStartTime());
+        findViewById(R.id.rowScheduleEnd).setOnClickListener(view -> pickEndTime());
+        findViewById(R.id.btnScheduleReset).setOnClickListener(view ->
+                applySchedule(PowerTime.DEFAULT_START_MINUTE, PowerTime.DEFAULT_END_MINUTE));
+    }
+
+    private void pickStartTime() {
+        int minute = AppPrefs.powerStartMinute(this);
+        new TimePickerDialog(dialogContext(), (view, hour, minuteOfHour) ->
+                applySchedule(hour * 60 + minuteOfHour, AppPrefs.powerEndMinute(this)),
+                minute / 60, minute % 60, DateFormat.is24HourFormat(this)).show();
+    }
+
+    private void pickEndTime() {
+        int minute = AppPrefs.powerEndMinute(this);
+        new TimePickerDialog(dialogContext(), (view, hour, minuteOfHour) ->
+                applySchedule(AppPrefs.powerStartMinute(this), hour * 60 + minuteOfHour),
+                minute / 60, minute % 60, DateFormat.is24HourFormat(this)).show();
+    }
+
+    private void applySchedule(int startMinute, int endMinute) {
+        if (startMinute == endMinute) {
+            Toast.makeText(this, R.string.schedule_invalid, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AppPrefs.setPowerWindow(this, startMinute, endMinute);
+        PowerTime.configure(this);
+        if (AppPrefs.trackingEnabled(this) && TrackingControl.hasActivityPermission(this)) {
+            TrackingService.refresh(this);
+        }
+        WidgetRefresher.updateAll(this);
+        updateUi();
+    }
+
+    private void wireTracking() {
+        swTracking.setOnCheckedChangeListener((button, checked) -> {
+            if (binding) {
+                return;
+            }
+            if (checked) {
+                requestTrackingPermissions();
+            } else {
+                TrackingControl.disable(this);
+                updateUi();
+            }
+        });
+
+        TextView battery = findViewById(R.id.btnBattery);
+        battery.setText(R.string.track_battery_btn);
+        battery.setOnClickListener(view -> TrackingControl.openBatterySettings(this));
+
+        TextView notifications = findViewById(R.id.btnNotifications);
+        notifications.setText(R.string.track_notifications_btn);
+        notifications.setOnClickListener(view ->
+                TrackingControl.openNotificationSettings(this));
+    }
+
+    private void requestTrackingPermissions() {
+        List<String> needed = TrackingControl.requiredPermissions(this);
+        if (needed.isEmpty()) {
+            enableTracking();
+        } else {
+            requestPermissions(needed.toArray(new String[0]), REQ_TRACKING);
+        }
+    }
+
+    private void enableTracking() {
+        if (!TrackingControl.enable(this)) {
+            Toast.makeText(this, R.string.track_permission_denied, Toast.LENGTH_SHORT).show();
+        }
+        updateUi();
     }
 
     private void wireNotifications() {
@@ -154,6 +258,7 @@ public class SettingsActivity extends BaseActivity {
         swWill.setChecked(AppPrefs.barEnabled(this, AppPrefs.BAR_WILL));
         swWealth.setChecked(AppPrefs.barEnabled(this, AppPrefs.BAR_WEALTH));
         swEnergy.setChecked(AppPrefs.barEnabled(this, AppPrefs.BAR_ENERGY));
+        swTracking.setChecked(AppPrefs.trackingEnabled(this));
         binding = false;
 
         boolean master = AppPrefs.notificationsEnabled(this);
@@ -173,9 +278,26 @@ public class SettingsActivity extends BaseActivity {
         findViewById(R.id.dotWealth).setBackground(ThemeManager.oval(theme.wealth));
         findViewById(R.id.dotEnergy).setBackground(ThemeManager.oval(theme.energy));
 
+        boolean tracking = AppPrefs.trackingEnabled(this);
+        if (tracking && !TrackingControl.hasActivityPermission(this)) {
+            txtServiceStatus.setText(R.string.track_permission_needed);
+        } else if (tracking && TrackingService.isRunning()) {
+            txtServiceStatus.setText(R.string.track_service_on);
+        } else if (tracking) {
+            txtServiceStatus.setText(R.string.track_service_paused);
+        } else {
+            txtServiceStatus.setText(R.string.track_service_off);
+        }
+        txtBatteryStatus.setText(TrackingControl.batteryUnrestricted(this)
+                ? R.string.track_battery_ok : R.string.track_battery_opt);
+        txtNotificationStatus.setText(TrackingControl.notificationsEnabled(this)
+                ? R.string.track_notifications_ok : R.string.track_notifications_off);
+
         boolean needsPermission = master && !Notifier.canNotify(this);
         txtNotifPerm.setVisibility(needsPermission ? TextView.VISIBLE : TextView.GONE);
 
+        txtScheduleStart.setText(PowerTime.startClock());
+        txtScheduleEnd.setText(PowerTime.endClock());
         txtThemeCurrent.setText(getString(R.string.theme_current,
                 getString(Themes.get(themeIndex).nameRes)));
         updateData();
@@ -243,7 +365,16 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        updateUi();
+        if (requestCode == REQ_TRACKING) {
+            if (!TrackingControl.hasActivityPermission(this)) {
+                Toast.makeText(this, R.string.track_permission_denied, Toast.LENGTH_SHORT).show();
+                updateUi();
+                return;
+            }
+            enableTracking();
+        } else {
+            updateUi();
+        }
     }
 
     private void exportHistory() {

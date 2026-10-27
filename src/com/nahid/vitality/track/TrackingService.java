@@ -14,16 +14,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.provider.Settings;
-import android.widget.Toast;
 
 import com.nahid.vitality.R;
 import com.nahid.vitality.TrackActivity;
@@ -35,18 +29,17 @@ import com.nahid.vitality.core.Themes;
 import com.nahid.vitality.data.HistoryDb;
 
 import java.text.NumberFormat;
+import java.time.LocalTime;
 import java.util.Locale;
 
-public class TrackingService extends Service implements SensorEventListener, LocationListener {
+public class TrackingService extends Service implements SensorEventListener {
 
     public static final String ACTION_START = "com.nahid.vitality.track.START";
     public static final String ACTION_STOP = "com.nahid.vitality.track.STOP";
     public static final String ACTION_REFRESH = "com.nahid.vitality.track.REFRESH";
-    public static final String EXTRA_LOCATION = "allow_location";
 
     private static final String CHANNEL_ID = "vitality_tracking";
     private static final int NOTIFICATION_ID = 7100;
-    private static final float STEP_METERS = 0.762f;
     private static final long TICK_MS = 30_000L;
 
     private static boolean running;
@@ -71,10 +64,6 @@ public class TrackingService extends Service implements SensorEventListener, Loc
 
     private int pendingSteps;
     private long lastFlushAt;
-    private LocationManager locations;
-    private Location lastLocation;
-    private boolean locationStarted;
-    private boolean allowLocation;
 
     public static boolean isRunning() {
         return running;
@@ -93,22 +82,19 @@ public class TrackingService extends Service implements SensorEventListener, Loc
 
     public static void start(Context context) {
         Intent intent = new Intent(context, TrackingService.class)
-                .setAction(ACTION_START)
-                .putExtra(EXTRA_LOCATION, true);
+                .setAction(ACTION_START);
         startCompat(context, intent);
     }
 
     public static void startFromBoot(Context context) {
         Intent intent = new Intent(context, TrackingService.class)
-                .setAction(ACTION_START)
-                .putExtra(EXTRA_LOCATION, false);
+                .setAction(ACTION_START);
         startCompat(context, intent);
     }
 
     public static void refresh(Context context) {
         Intent intent = new Intent(context, TrackingService.class)
-                .setAction(ACTION_REFRESH)
-                .putExtra(EXTRA_LOCATION, true);
+                .setAction(ACTION_REFRESH);
         startCompat(context, intent);
     }
 
@@ -130,6 +116,7 @@ public class TrackingService extends Service implements SensorEventListener, Loc
     @Override
     public void onCreate() {
         super.onCreate();
+        PowerTime.configure(this);
         running = true;
         createChannel();
         sensors = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -145,6 +132,7 @@ public class TrackingService extends Service implements SensorEventListener, Loc
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        PowerTime.configure(this);
         if (!AppPrefs.trackingEnabled(this)
                 || checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -158,14 +146,8 @@ public class TrackingService extends Service implements SensorEventListener, Loc
             return START_NOT_STICKY;
         }
 
-        allowLocation = intent != null && intent.getBooleanExtra(EXTRA_LOCATION, false);
         startForegroundCompat();
         Tracker.tick(this);
-        if (allowLocation && AppPrefs.gpsEnabled(this) && hasLocationPermission()) {
-            startLocation();
-        } else {
-            stopLocation();
-        }
 
         handler.removeCallbacks(ticker);
         handler.post(ticker);
@@ -182,7 +164,6 @@ public class TrackingService extends Service implements SensorEventListener, Loc
             stepRegistered = false;
             motionRegistered = false;
         }
-        stopLocation();
         running = false;
         super.onDestroy();
     }
@@ -261,8 +242,11 @@ public class TrackingService extends Service implements SensorEventListener, Loc
 
     private void flush() {
         if (pendingSteps > 0) {
-            HistoryDb.get(this).addSteps(PowerTime.powerDayKey(),
-                    pendingSteps, pendingSteps * STEP_METERS);
+            String day = PowerTime.powerDayKey();
+            HistoryDb db = HistoryDb.get(this);
+            db.addSteps(day, pendingSteps, pendingSteps * StepMetrics.STEP_METERS);
+            LocalTime now = LocalTime.now();
+            db.addMinuteSteps(day, now.getHour() * 60 + now.getMinute(), pendingSteps);
             pendingSteps = 0;
         }
         lastFlushAt = System.currentTimeMillis();
@@ -276,22 +260,14 @@ public class TrackingService extends Service implements SensorEventListener, Loc
         Notification notification = buildNotification();
         try {
             if (Build.VERSION.SDK_INT >= 34) {
-                int type = ServiceInfo.FOREGROUND_SERVICE_TYPE_HEALTH;
-                if (allowLocation && AppPrefs.gpsEnabled(this) && hasLocationPermission()) {
-                    type |= ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
-                }
-                startForeground(NOTIFICATION_ID, notification, type);
+                startForeground(NOTIFICATION_ID, notification,
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_HEALTH);
             } else {
                 startForeground(NOTIFICATION_ID, notification);
             }
         } catch (Exception error) {
             try {
-                if (Build.VERSION.SDK_INT >= 34) {
-                    startForeground(NOTIFICATION_ID, notification,
-                            ServiceInfo.FOREGROUND_SERVICE_TYPE_HEALTH);
-                } else {
-                    startForeground(NOTIFICATION_ID, notification);
-                }
+                startForeground(NOTIFICATION_ID, notification);
             } catch (Exception second) {
                 stopSelf();
             }
@@ -311,7 +287,7 @@ public class TrackingService extends Service implements SensorEventListener, Loc
                 .activityForDay(PowerTime.powerDayKey());
         int steps = (activity == null ? 0 : activity.steps) + pendingSteps;
         double meters = (activity == null ? 0.0 : activity.displayDistanceM())
-                + pendingSteps * STEP_METERS;
+                + pendingSteps * StepMetrics.STEP_METERS;
         int energy = PowerTime.roundedPercent(EnergyModel.current(this));
 
         String text = getString(R.string.track_notif_text, formatSteps(steps),
@@ -320,7 +296,10 @@ public class TrackingService extends Service implements SensorEventListener, Loc
             text = getString(R.string.track_notif_no_sensor, energy);
         }
 
-        Intent open = new Intent(this, TrackActivity.class);
+        Intent open = new Intent(this, TrackActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         PendingIntent pending = PendingIntent.getActivity(this, 1, open,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         Theme theme = Themes.get(AppPrefs.themeIndex(this));
@@ -354,78 +333,6 @@ public class TrackingService extends Service implements SensorEventListener, Loc
         channel.enableVibration(false);
         channel.setSound(null, null);
         manager.createNotificationChannel(channel);
-    }
-
-    private void startLocation() {
-        if (locationStarted || !hasLocationPermission()) {
-            return;
-        }
-        locations = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (locations == null) {
-            return;
-        }
-        try {
-            if (!locations.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                return;
-            }
-            locations.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    60_000L, 50f, this, Looper.getMainLooper());
-            locationStarted = true;
-        } catch (Exception ignored) {
-            locationStarted = false;
-        }
-    }
-
-    private void stopLocation() {
-        if (locations != null && locationStarted) {
-            try {
-                locations.removeUpdates(this);
-            } catch (Exception ignored) {
-            }
-        }
-        locationStarted = false;
-    }
-
-    private boolean hasLocationPermission() {
-        return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-                || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        if (location == null) {
-            return;
-        }
-        if (location.hasAccuracy() && location.getAccuracy() > 100f) {
-            return;
-        }
-        if (lastLocation != null) {
-            long gap = location.getTime() - lastLocation.getTime();
-            if (gap > 0L && gap < 10 * 60 * 1000L) {
-                float[] result = new float[1];
-                Location.distanceBetween(lastLocation.getLatitude(), lastLocation.getLongitude(),
-                        location.getLatitude(), location.getLongitude(), result);
-                if (result[0] >= 5f && result[0] < 2000f) {
-                    HistoryDb.get(this).addGpsMeters(PowerTime.powerDayKey(), result[0]);
-                }
-            }
-        }
-        lastLocation = location;
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        stopLocation();
     }
 
     private static String formatSteps(int steps) {

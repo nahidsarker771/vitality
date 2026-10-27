@@ -113,7 +113,10 @@ public final class Notifier {
         }
 
         Theme theme = Themes.get(AppPrefs.themeIndex(context));
-        Intent open = new Intent(context, MainActivity.class);
+        Intent open = new Intent(context, MainActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         PendingIntent pending = PendingIntent.getActivity(context, 0, open,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 

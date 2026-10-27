@@ -40,7 +40,7 @@ public class MainActivity extends BaseActivity {
     private TextView txtOverall;
     private TextView txtCountdown;
     private TextView txtCountdownLabel;
-    private TextView txtSamples;
+    private TextView txtWindow;
     private ScoreRingView ring;
     private PowerCardView cardWill;
     private PowerCardView cardWealth;
@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity {
         txtOverall = findViewById(R.id.txtOverall);
         txtCountdown = findViewById(R.id.txtCountdown);
         txtCountdownLabel = findViewById(R.id.txtCountdownLabel);
-        txtSamples = findViewById(R.id.txtSamples);
+        txtWindow = findViewById(R.id.txtWindow);
         ring = findViewById(R.id.ring);
         cardWill = findViewById(R.id.cardWill);
         cardWealth = findViewById(R.id.cardWealth);
@@ -74,7 +74,6 @@ public class MainActivity extends BaseActivity {
 
         Notifier.ensureChannel(this);
         AlarmScheduler.schedule(this);
-        updateSamples();
         updateNow();
         maybeAskNotificationPermission();
         WidgetRefresher.updateAll(this);
@@ -112,7 +111,6 @@ public class MainActivity extends BaseActivity {
         if (newMinute && active) {
             HistoryDb.sample(this, percent, percent, energy);
             Notifier.check(this, percent, percent, energy);
-            updateSamples();
         }
         if (minute != lastWidgetMinute && minute % 5 == 0) {
             lastWidgetMinute = minute;
@@ -131,6 +129,8 @@ public class MainActivity extends BaseActivity {
         txtDate.setText(PowerTime.fullDate(now.toLocalDate()));
         txtClock.setText(PowerTime.clockWithSeconds(now));
         txtOverall.setText(rounded + "%");
+        txtWindow.setText(getString(R.string.window_value,
+                PowerTime.startClock(), PowerTime.endClock()));
         txtLive.setText(active ? R.string.live : R.string.status_resting);
 
         ring.setValue((percent * 2f + energy) / 3f);
@@ -179,11 +179,6 @@ public class MainActivity extends BaseActivity {
         return getString(R.string.energy_steps,
                 java.text.NumberFormat.getIntegerInstance(java.util.Locale.US)
                         .format(activity.steps));
-    }
-
-    private void updateSamples() {
-        int samples = HistoryDb.get(this).samplesForDay(PowerTime.powerDayKey());
-        txtSamples.setText(String.valueOf(samples));
     }
 
     private int greeting(int hour) {

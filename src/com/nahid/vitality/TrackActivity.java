@@ -1,22 +1,13 @@
 package com.nahid.vitality;
 
-import android.Manifest;
-import android.app.NotificationManager;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.PowerManager;
-import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,24 +16,26 @@ import com.nahid.vitality.core.EnergyModel;
 import com.nahid.vitality.core.PowerTime;
 import com.nahid.vitality.core.ThemeManager;
 import com.nahid.vitality.data.HistoryDb;
+import com.nahid.vitality.track.SpeedStats;
 import com.nahid.vitality.track.Tracker;
+import com.nahid.vitality.track.TrackingControl;
 import com.nahid.vitality.track.TrackingService;
+import com.nahid.vitality.ui.DayActivityChartView;
 import com.nahid.vitality.ui.VitalityBarView;
 
 import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class TrackActivity extends BaseActivity {
 
     private static final int REQ_TRACK = 21;
-    private static final int REQ_GPS = 22;
     private static final DateTimeFormatter TIME =
             DateTimeFormatter.ofPattern("h:mm a", Locale.US);
 
@@ -65,18 +58,21 @@ public class TrackActivity extends BaseActivity {
     private TextView txtRest;
     private TextView txtMotion;
     private TextView txtSync;
+    private TextView txtPermissionTitle;
     private TextView txtPermission;
-    private TextView txtServiceStatus;
-    private TextView txtBatteryStatus;
-    private TextView txtNotificationStatus;
+    private TextView btnPermission;
     private LinearLayout cardPermission;
     private LinearLayout listRecent;
     private TextView txtRecentEmpty;
-    private Switch swTracking;
-    private Switch swGps;
     private VitalityBarView energyBar;
-    private boolean binding;
+    private DayActivityChartView dayChart;
+    private TextView txtActivityEmpty;
+    private TextView txtSpeedLast;
+    private TextView txtSpeedTop;
+    private TextView txtSpeedLow;
+    private int[] minuteSteps;
     private long lastRecentStamp = Long.MIN_VALUE;
+    private long lastChartStamp = Long.MIN_VALUE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,24 +89,23 @@ public class TrackActivity extends BaseActivity {
         txtRest = findViewById(R.id.txtRest);
         txtMotion = findViewById(R.id.txtMotion);
         txtSync = findViewById(R.id.txtSync);
+        txtPermissionTitle = findViewById(R.id.txtPermissionTitle);
         txtPermission = findViewById(R.id.txtPermission);
-        txtServiceStatus = findViewById(R.id.txtServiceStatus);
-        txtBatteryStatus = findViewById(R.id.txtBatteryStatus);
-        txtNotificationStatus = findViewById(R.id.txtNotificationStatus);
+        btnPermission = findViewById(R.id.btnPermission);
         cardPermission = findViewById(R.id.cardPermission);
         listRecent = findViewById(R.id.listRecent);
         txtRecentEmpty = findViewById(R.id.txtRecentEmpty);
-        swTracking = findViewById(R.id.swTracking);
-        swGps = findViewById(R.id.swGps);
         energyBar = findViewById(R.id.trackEnergyBar);
+        dayChart = findViewById(R.id.trackDayChart);
+        txtActivityEmpty = findViewById(R.id.txtActivityEmpty);
+        txtSpeedLast = findViewById(R.id.txtSpeedLast);
+        txtSpeedTop = findViewById(R.id.txtSpeedTop);
+        txtSpeedLow = findViewById(R.id.txtSpeedLow);
 
         applyChrome(1);
         energyBar.setColors(theme.energy, ThemeManager.lighten(theme.energy, 0.35f));
 
-        wireTracking();
-        wireGps();
         wirePermission();
-        wireKeepAlive();
         updateUi();
     }
 
@@ -120,7 +115,7 @@ public class TrackActivity extends BaseActivity {
         updateUi();
         handler.removeCallbacks(ticker);
         handler.post(ticker);
-        if (AppPrefs.trackingEnabled(this) && hasActivityPermission()) {
+        if (AppPrefs.trackingEnabled(this) && TrackingControl.hasActivityPermission(this)) {
             TrackingService.ensureRunning(this);
         }
     }
@@ -131,62 +126,12 @@ public class TrackActivity extends BaseActivity {
         handler.removeCallbacks(ticker);
     }
 
-    private void wireTracking() {
-        swTracking.setOnCheckedChangeListener((button, checked) -> {
-            if (binding) {
-                return;
-            }
-            if (checked) {
-                requestTrackingPermissions();
-            } else {
-                AppPrefs.setTrackingEnabled(this, false);
-                Tracker.endSleep(this);
-                TrackingService.stop(this);
-                updateUi();
-            }
-        });
-    }
-
-    private void wireGps() {
-        swGps.setOnCheckedChangeListener((button, checked) -> {
-            if (binding) {
-                return;
-            }
-            AppPrefs.setGpsEnabled(this, checked);
-            if (checked && !hasLocationPermission()) {
-                requestPermissions(new String[]{
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION}, REQ_GPS);
-            } else if (AppPrefs.trackingEnabled(this)) {
-                TrackingService.refresh(this);
-            }
-            updateUi();
-        });
-    }
-
     private void wirePermission() {
-        findViewById(R.id.btnPermission).setOnClickListener(view -> requestTrackingPermissions());
-    }
-
-    private void wireKeepAlive() {
-        findViewById(R.id.btnBattery).setOnClickListener(view -> openBatterySettings());
-        findViewById(R.id.btnNotifications).setOnClickListener(view -> openNotificationSettings());
+        btnPermission.setOnClickListener(view -> requestTrackingPermissions());
     }
 
     private void requestTrackingPermissions() {
-        List<String> needed = new ArrayList<>();
-        if (!hasActivityPermission()) {
-            needed.add(Manifest.permission.ACTIVITY_RECOGNITION);
-        }
-        if (Build.VERSION.SDK_INT >= 33
-                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED) {
-            needed.add(Manifest.permission.POST_NOTIFICATIONS);
-        }
-        if (AppPrefs.gpsEnabled(this) && !hasLocationPermission()) {
-            needed.add(Manifest.permission.ACCESS_FINE_LOCATION);
-            needed.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
+        List<String> needed = TrackingControl.requiredPermissions(this);
         if (needed.isEmpty()) {
             enableTracking();
         } else {
@@ -195,17 +140,9 @@ public class TrackActivity extends BaseActivity {
     }
 
     private void enableTracking() {
-        if (!hasActivityPermission()) {
+        if (!TrackingControl.enable(this)) {
             Toast.makeText(this, R.string.track_permission_denied, Toast.LENGTH_SHORT).show();
-            updateUi();
-            return;
         }
-        AppPrefs.setTrackingEnabled(this, true);
-        AppPrefs.setTrackingAsked(this, true);
-        EnergyModel.initialize(this);
-        AppPrefs.setLastTrackerTick(this, System.currentTimeMillis());
-        Tracker.tick(this);
-        TrackingService.start(this);
         updateUi();
     }
 
@@ -213,26 +150,15 @@ public class TrackActivity extends BaseActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQ_TRACK) {
-            if (!hasActivityPermission()) {
-                Toast.makeText(this, R.string.track_permission_denied, Toast.LENGTH_SHORT).show();
-                updateUi();
-                return;
-            }
-            if (!hasLocationPermission() && AppPrefs.gpsEnabled(this)) {
-                AppPrefs.setGpsEnabled(this, false);
-                Toast.makeText(this, R.string.track_location_off, Toast.LENGTH_SHORT).show();
-            }
-            enableTracking();
-        } else if (requestCode == REQ_GPS) {
-            if (!hasLocationPermission()) {
-                AppPrefs.setGpsEnabled(this, false);
-                Toast.makeText(this, R.string.track_location_off, Toast.LENGTH_SHORT).show();
-            } else if (AppPrefs.trackingEnabled(this)) {
-                TrackingService.refresh(this);
-            }
-            updateUi();
+        if (requestCode != REQ_TRACK) {
+            return;
         }
+        if (!TrackingControl.hasActivityPermission(this)) {
+            Toast.makeText(this, R.string.track_permission_denied, Toast.LENGTH_SHORT).show();
+            updateUi();
+            return;
+        }
+        enableTracking();
     }
 
     private void updateUi() {
@@ -299,44 +225,43 @@ public class TrackActivity extends BaseActivity {
                 tracking ? ThemeManager.withAlpha(theme.will, 0.5f) : theme.border, 99f));
         txtTrackStatus.setTextColor(tracking ? theme.will : theme.muted);
 
-        if (tracking && TrackingService.isRunning()) {
-            txtServiceStatus.setText(getString(R.string.track_service_on,
-                    PowerTime.clockNow()));
-        } else if (tracking) {
-            txtServiceStatus.setText(R.string.track_service_paused);
-        } else {
-            txtServiceStatus.setText(R.string.track_service_off);
+        boolean granted = TrackingControl.hasActivityPermission(this);
+        boolean needsSetup = !granted || !tracking;
+        cardPermission.setVisibility(needsSetup ? View.VISIBLE : View.GONE);
+        if (needsSetup) {
+            if (!granted) {
+                SensorManager sensors = (SensorManager) getSystemService(SENSOR_SERVICE);
+                boolean hasStep = sensors != null
+                        && sensors.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null;
+                txtPermissionTitle.setText(R.string.track_permission_title);
+                txtPermission.setText(hasStep ? R.string.track_permission_body
+                        : R.string.track_permission_sensor);
+                btnPermission.setText(R.string.track_allow);
+            } else {
+                txtPermissionTitle.setText(R.string.track_enable_title);
+                txtPermission.setText(R.string.track_enable_body);
+                btnPermission.setText(R.string.track_enable);
+            }
         }
-
-        binding = true;
-        swTracking.setChecked(tracking);
-        swGps.setChecked(AppPrefs.gpsEnabled(this));
-        binding = false;
-
-        boolean activityGranted = hasActivityPermission();
-        cardPermission.setVisibility(activityGranted ? View.GONE : View.VISIBLE);
-        if (!activityGranted) {
-            SensorManager sensors = (SensorManager) getSystemService(SENSOR_SERVICE);
-            boolean hasStep = sensors != null
-                    && sensors.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null;
-            txtPermission.setText(hasStep ? R.string.track_permission_body
-                    : R.string.track_permission_sensor);
-        }
-
-        PowerManager power = (PowerManager) getSystemService(POWER_SERVICE);
-        boolean unrestricted = power != null
-                && power.isIgnoringBatteryOptimizations(getPackageName());
-        txtBatteryStatus.setText(unrestricted
-                ? R.string.track_battery_ok : R.string.track_battery_opt);
-
-        NotificationManager notifications =
-                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        boolean notificationsOn = notifications != null
-                && notifications.areNotificationsEnabled();
-        txtNotificationStatus.setText(notificationsOn
-                ? R.string.track_notifications_ok : R.string.track_notifications_off);
 
         long stamp = activity == null ? -1L : activity.updatedAt;
+        if (stamp != lastChartStamp) {
+            lastChartStamp = stamp;
+            minuteSteps = db.minuteStepsForDay(PowerTime.powerDayKey());
+            dayChart.setMinuteSteps(minuteSteps);
+            txtActivityEmpty.setVisibility(dayChart.hasData() ? View.GONE : View.VISIBLE);
+        }
+        SpeedStats speeds = SpeedStats.fromMinutes(minuteSteps, currentMinuteOfDay());
+        txtSpeedLast.setText(speeds.hasLast10
+                ? getString(R.string.track_speed_value, speeds.last10Kmh)
+                : getString(R.string.dash));
+        txtSpeedTop.setText(speeds.hasRange
+                ? getString(R.string.track_speed_value, speeds.topKmh)
+                : getString(R.string.dash));
+        txtSpeedLow.setText(speeds.hasRange
+                ? getString(R.string.track_speed_value, speeds.lowKmh)
+                : getString(R.string.dash));
+
         if (stamp != lastRecentStamp) {
             lastRecentStamp = stamp;
             loadRecent(db);
@@ -384,53 +309,9 @@ public class TrackActivity extends BaseActivity {
         }
     }
 
-    private void openBatterySettings() {
-        try {
-            PowerManager power = (PowerManager) getSystemService(POWER_SERVICE);
-            if (power != null && !power.isIgnoringBatteryOptimizations(getPackageName())) {
-                Intent request = new Intent(
-                        Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                        Uri.parse("package:" + getPackageName()));
-                startActivity(request);
-            } else {
-                startActivity(new Intent(
-                        Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
-            }
-        } catch (Exception error) {
-            try {
-                startActivity(new Intent(
-                        Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
-            } catch (Exception ignored) {
-                Toast.makeText(this, R.string.track_battery_na, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void openNotificationSettings() {
-        try {
-            Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
-            startActivity(intent);
-        } catch (Exception error) {
-            try {
-                Intent details = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                details.setData(Uri.parse("package:" + getPackageName()));
-                startActivity(details);
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-    private boolean hasActivityPermission() {
-        return checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION)
-                == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private boolean hasLocationPermission() {
-        return checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED
-                || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED;
+    private static int currentMinuteOfDay() {
+        LocalTime now = LocalTime.now();
+        return now.getHour() * 60 + now.getMinute();
     }
 
     private static String formatSteps(int steps) {

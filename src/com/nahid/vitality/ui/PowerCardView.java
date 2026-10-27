@@ -36,7 +36,7 @@ public class PowerCardView extends LinearLayout implements ThemeAware {
     private void init(Context context) {
         setOrientation(VERTICAL);
         setTag("card");
-        int pad = Math.round(ThemeManager.dp(context, 18f));
+        int pad = Math.round(ThemeManager.dp(context, 11f));
         setPadding(pad, pad, pad, pad);
         LayoutInflater.from(context).inflate(R.layout.view_power_card, this, true);
         dot = findViewById(R.id.pcDot);

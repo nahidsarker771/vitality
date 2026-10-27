@@ -15,7 +15,7 @@ import java.util.Locale;
 
 public final class HistoryDb extends SQLiteOpenHelper {
 
-    public static final int SCHEMA_VERSION = 2;
+    public static final int SCHEMA_VERSION = 3;
     private static final String NAME = "vitality_history.db";
     private static HistoryDb instance;
 
@@ -43,6 +43,7 @@ public final class HistoryDb extends SQLiteOpenHelper {
                 + "last_energy REAL NOT NULL DEFAULT 0,"
                 + "updated_at INTEGER NOT NULL DEFAULT 0)");
         createActivity(db);
+        createMinuteActivity(db);
     }
 
     private static void createActivity(SQLiteDatabase db) {
@@ -56,6 +57,14 @@ public final class HistoryDb extends SQLiteOpenHelper {
                 + "updated_at INTEGER NOT NULL DEFAULT 0)");
     }
 
+    private static void createMinuteActivity(SQLiteDatabase db) {
+        db.execSQL("CREATE TABLE IF NOT EXISTS activity_minute ("
+                + "day TEXT NOT NULL,"
+                + "minute INTEGER NOT NULL,"
+                + "steps INTEGER NOT NULL DEFAULT 0,"
+                + "PRIMARY KEY(day, minute))");
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         for (int version = oldVersion; version < newVersion; version++) {
@@ -67,6 +76,9 @@ public final class HistoryDb extends SQLiteOpenHelper {
         switch (version) {
             case 2:
                 createActivity(db);
+                break;
+            case 3:
+                createMinuteActivity(db);
                 break;
             default:
                 break;
@@ -155,6 +167,7 @@ public final class HistoryDb extends SQLiteOpenHelper {
     public void clear() {
         getWritableDatabase().delete("history", null, null);
         getWritableDatabase().delete("activity", null, null);
+        getWritableDatabase().delete("activity_minute", null, null);
     }
 
     public String csv() {
@@ -234,15 +247,38 @@ public final class HistoryDb extends SQLiteOpenHelper {
                 new Object[]{steps, Math.max(0.0, stepMeters), System.currentTimeMillis(), day});
     }
 
-    public void addGpsMeters(String day, double meters) {
-        if (meters <= 0.0) {
+    public void addMinuteSteps(String day, int minuteOfDay, int steps) {
+        if (steps <= 0) {
             return;
         }
+        int minute = Math.max(0, Math.min(1439, minuteOfDay));
         SQLiteDatabase db = getWritableDatabase();
-        seedActivity(db, day);
-        db.execSQL("UPDATE activity SET gps_distance_m = gps_distance_m + ?,"
-                        + " updated_at = ? WHERE day = ?",
-                new Object[]{meters, System.currentTimeMillis(), day});
+        ContentValues seed = new ContentValues();
+        seed.put("day", day);
+        seed.put("minute", minute);
+        db.insertWithOnConflict("activity_minute", null, seed,
+                SQLiteDatabase.CONFLICT_IGNORE);
+        db.execSQL("UPDATE activity_minute SET steps = steps + ?"
+                        + " WHERE day = ? AND minute = ?",
+                new Object[]{steps, day, minute});
+    }
+
+    public int[] minuteStepsForDay(String dayKey) {
+        int[] steps = new int[1440];
+        Cursor cursor = getReadableDatabase().rawQuery(
+                "SELECT minute, steps FROM activity_minute WHERE day = ?",
+                new String[]{dayKey});
+        try {
+            while (cursor.moveToNext()) {
+                int minute = cursor.getInt(0);
+                if (minute >= 0 && minute < 1440) {
+                    steps[minute] = cursor.getInt(1);
+                }
+            }
+        } finally {
+            cursor.close();
+        }
+        return steps;
     }
 
     public void addSleepSeconds(String day, long seconds) {
@@ -369,7 +405,7 @@ public final class HistoryDb extends SQLiteOpenHelper {
         }
 
         public double displayDistanceM() {
-            return Math.max(distanceM, gpsDistanceM);
+            return distanceM;
         }
 
         public int activeMinutes() {

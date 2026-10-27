@@ -2,13 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/navBar"
     android:layout_width="match_parent"
-    android:layout_height="64dp"
-    android:layout_marginStart="14dp"
-    android:layout_marginEnd="14dp"
-    android:layout_marginBottom="12dp"
+    android:layout_height="70dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="10dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="6dp"
+    android:padding="5dp"
+    android:elevation="10dp"
+    android:outlineProvider="background"
     android:tag="nav">
 
     <TextView
@@ -17,8 +19,11 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:drawableTop="@drawable/ic_nav_home"
+        android:drawablePadding="4dp"
         android:text="@string/nav_home"
-        android:textSize="12sp"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
         android:fontFamily="sans-serif-medium" />
 
     <TextView
@@ -27,8 +32,11 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:drawableTop="@drawable/ic_nav_track"
+        android:drawablePadding="4dp"
         android:text="@string/nav_track"
-        android:textSize="12sp"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
         android:fontFamily="sans-serif-medium" />
 
     <TextView
@@ -37,18 +45,11 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:drawableTop="@drawable/ic_nav_history"
+        android:drawablePadding="4dp"
         android:text="@string/nav_history"
-        android:textSize="12sp"
-        android:fontFamily="sans-serif-medium" />
-
-    <TextView
-        android:id="@+id/navThemes"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/nav_themes"
-        android:textSize="12sp"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
         android:fontFamily="sans-serif-medium" />
 
     <TextView
@@ -57,7 +58,10 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
+        android:drawableTop="@drawable/ic_nav_settings"
+        android:drawablePadding="4dp"
         android:text="@string/nav_settings"
-        android:textSize="12sp"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
         android:fontFamily="sans-serif-medium" />
 </LinearLayout>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg_default">#FF0A0E17</color>
-    <color name="nav_default">#FF0D1220</color>
-    <color name="icon_bg">#FF0A0E17</color>
-    <color name="accent_default">#FF8B7CFF</color>
+    <color name="bg_default">#FF0D1117</color>
+    <color name="nav_default">#FF10161F</color>
+    <color name="icon_bg">#FF0D1117</color>
+    <color name="accent_default">#FF9A8CF0</color>
     <color name="widget_bg_0">#FF121826</color>
     <color name="widget_bg_1">#FF0E1F28</color>
     <color name="widget_bg_2">#FF0B2231</color>
@@ -12,4 +12,12 @@
     <color name="widget_bg_5">#FF21141E</color>
     <color name="widget_bg_6">#FF0D141D</color>
     <color name="widget_bg_7">#FFFFFFFF</color>
+    <color name="widget_bg_8">#FF3B4252</color>
+    <color name="widget_bg_9">#FFFFFBF0</color>
+    <color name="widget_bg_10">#FF32302F</color>
+    <color name="widget_bg_11">#FF1F1D2E</color>
+    <color name="widget_bg_12">#FF313244</color>
+    <color name="widget_bg_13">#FF24283B</color>
+    <color name="widget_bg_14">#FF2F343E</color>
+    <color name="widget_bg_15">#FF2A2A37</color>
 </resources>

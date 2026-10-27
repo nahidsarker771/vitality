@@ -1,26 +1,36 @@
 # Vitality
 
 Three daily power bars in real time — **Willpower**, **Wealth Power** and
-**Energy Power**. Willpower and Wealth start at 100% at 05:00 and drain to 0%
-at 22:00, then reset overnight. Energy follows your real activity: steps and
-movement drain it, rest and sleep restore it. Fully offline, native Android
-(Java), no WebView.
+**Energy Power**. Willpower and Wealth start full at the configured start time
+and drain to zero at the configured end time (default 05:00–22:00), then reset
+overnight. Energy follows your real activity: steps and movement drain it,
+rest and sleep restore it. Fully offline, native Android (Java), no WebView.
 
 **Download:** [latest APK](https://github.com/nahid77777771-maker/vitality/releases/latest/download/Vitality.apk)
 · **Web:** [nahid77777771-maker.github.io/vitality](https://nahid77777771-maker.github.io/vitality/)
 
 ## Features
 
-- Live countdown with seconds precision and an overall power ring
-- Track tab: step counter, distance (step + GPS), active minutes, last 7 days
+- Compact home with live countdown, overall ring and three bars (no scrolling)
+- Track tab: step counter, walking distance from steps, active minutes, last 7 days
+- Day activity timeline (hourly bars showing when you walked) and walking speed
+  estimated from step cadence: last 10 minutes, top speed and low speed
 - Activity-aware Energy Power: step drain, active/light/rest modes, sleep recovery
 - Automatic sleep detection at night from stillness and screen state
 - Foreground tracking service with an ongoing status notification, resumes on boot
-- 8 themes (incl. a light theme); widgets follow the active theme
+- Tracking, battery and notification controls grouped in Settings
+- Power schedule in Settings: choose the start/end of the 100% → 0% window
+  (default 5 AM–10 PM; overnight windows supported)
+- 16 calm themes, including Nord, Solarized Light, Gruvbox, Rosé Pine,
+  Catppuccin Mocha, Tokyo Night, One Dark and Kanagawa; widgets follow the
+  active theme
 - SQLite history: 7-day average, 14-day chart, per-day details, CSV export with steps
 - Four home-screen widgets: 2×2, 4×1, 4×2 and 4×4
 - Threshold alerts at 75 / 50 / 25 / 10% with per-bar switches
 - Alarm-based background sampling and widget refresh, rescheduled on boot
+- Four fixed bottom-nav tabs with no transitions; one tap switches once,
+  tapping the current tab does nothing, and Back/swipe returns to the
+  previous tab (the app exits only from root Home); themes change in Settings
 - Android 10+ (minSdk 29, targetSdk 34), no INTERNET permission
 
 ## Install

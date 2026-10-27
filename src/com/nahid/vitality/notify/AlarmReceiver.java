@@ -18,6 +18,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         if (!ACTION_TICK.equals(intent.getAction())) {
             return;
         }
+        PowerTime.configure(context);
         Tracker.tick(context);
         float percent = PowerTime.nowPercent();
         float energy = EnergyModel.current(context);

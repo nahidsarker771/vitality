@@ -21,6 +21,7 @@ public abstract class BaseVitalityWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        PowerTime.configure(context);
         Theme theme = Themes.get(AppPrefs.themeIndex(context));
         float percent = PowerTime.nowPercent();
         float energy = EnergyModel.current(context);
@@ -62,10 +63,14 @@ public abstract class BaseVitalityWidget extends AppWidgetProvider {
         }
         if (layout == R.layout.widget_large) {
             views.setTextColor(R.id.wReset, theme.muted);
-            views.setTextViewText(R.id.wReset, context.getString(R.string.widget_resets));
+            views.setTextViewText(R.id.wReset, context.getString(R.string.widget_resets,
+                    PowerTime.startClock(), PowerTime.endClock()));
         }
 
-        Intent open = new Intent(context, MainActivity.class);
+        Intent open = new Intent(context, MainActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+                        | Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         PendingIntent pending = PendingIntent.getActivity(context, 0, open,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.widgetRoot, pending);
@@ -88,6 +93,22 @@ public abstract class BaseVitalityWidget extends AppWidgetProvider {
                 return R.drawable.widget_bg_6;
             case 7:
                 return R.drawable.widget_bg_7;
+            case 8:
+                return R.drawable.widget_bg_8;
+            case 9:
+                return R.drawable.widget_bg_9;
+            case 10:
+                return R.drawable.widget_bg_10;
+            case 11:
+                return R.drawable.widget_bg_11;
+            case 12:
+                return R.drawable.widget_bg_12;
+            case 13:
+                return R.drawable.widget_bg_13;
+            case 14:
+                return R.drawable.widget_bg_14;
+            case 15:
+                return R.drawable.widget_bg_15;
             default:
                 return R.drawable.widget_bg_0;
         }
